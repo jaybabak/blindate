@@ -25,6 +25,7 @@ class App extends Component<Props> {
       }
     }
     this.getLocation = this.getLocation.bind(this);
+    this.getHelp = this.getHelp.bind(this);
   }
 
   getLocation() {
@@ -47,13 +48,29 @@ class App extends Component<Props> {
     )
   }
 
+  getHelp() {
+      Alert.alert(
+        'Need Help?',
+        'Help screen will be available soon!',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ],
+        { cancelable: false },
+      );
+  }
+
   render() {
     return (
       <Container style={{ backgroundColor: '#FFE6E6' }} >
         <Header noLeft>
           <Left>
             <Button transparent
-              onPress={() => this.props.navigation.navigate('Home')}
+              onPress={this.getHelp}
             >
               <Icon
                 style={{ fontSize: 26, color: 'red' }}
@@ -101,18 +118,3 @@ const TabNavigator = createBottomTabNavigator(
 
 export default createAppContainer(TabNavigator);
 
-
-  //ALERT BOX
-  //     Alert.alert(
-  //       'Error Retrieving Location!',
-  //       'Unable to locate you at the moment, please try again.',
-  //       [
-  //         {
-  //           text: 'Cancel',
-  //           onPress: () => console.log('Cancel Pressed'),
-  //           style: 'cancel',
-  //         },
-  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //       ],
-  //       { cancelable: false },
-  //     );
