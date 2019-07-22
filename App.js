@@ -28,9 +28,9 @@ class App extends Component<Props> {
     super(props);
     this.state = {
       location: {
-        lat: '?',
-        lon: '?',
-        city: '?'
+        lat: null,
+        lon: null,
+        city: null
       }
     }
     this.getLocation = this.getLocation.bind(this);
@@ -38,55 +38,66 @@ class App extends Component<Props> {
 
   getLocation() {
 
-    navigator.geolocation.requestAuthorization();
-
-    var geoOptions = {
-      enableHighAccuracy: true,
-      maximumAge: 1000 * 60 * 60,
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({
+      lat:position.coords.latitude,
+      lon: position.coords.longitude,
+      city: position.timestamp
+    })
+  },
+  (error) => {console.log(error);},
+    {enableHighAccuracy: true, timeout: 30000}
+    )
     }
+  //   navigator.geolocation.requestAuthorization();
 
-    var that = this;
+  //   var geoOptions = {
+  //     enableHighAccuracy: true,
+  //     maximumAge: 1000 * 60 * 60,
+  //   }
 
-    navigator.geolocation.requestAuthorization();
-    navigator.geolocation.getCurrentPosition(function (data) {
+  //   var that = this;
 
-      Alert.alert(
-        'Success',
-        'Grabbed location!',
-        [
-          { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ],
-        { cancelable: false },
-      );
+  //   navigator.geolocation.requestAuthorization();
+  //   navigator.geolocation.getCurrentPosition(function (data) {
 
-      console.log(data);
+  //     Alert.alert(
+  //       'Success',
+  //       'Grabbed location!',
+  //       [
+  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //       ],
+  //       { cancelable: false },
+  //     );
 
-      that.setState(state => ({
-        location: {
-          lat: data.coords.latitude,
-          lon: data.coords.longitude
-        }
-      }));
+  //     console.log(data);
 
-    }, function () {
+  //     that.setState(state => ({
+  //       location: {
+  //         lat: data.coords.latitude,
+  //         lon: data.coords.longitude
+  //       }
+  //     }));
 
-      Alert.alert(
-        'Error Retrieving Location!',
-        'Unable to locate you at the moment, please try again.',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ],
-        { cancelable: false },
-      );
+  //   }, function () {
 
-    }, geoOptions);
+  //     Alert.alert(
+  //       'Error Retrieving Location!',
+  //       'Unable to locate you at the moment, please try again.',
+  //       [
+  //         {
+  //           text: 'Cancel',
+  //           onPress: () => console.log('Cancel Pressed'),
+  //           style: 'cancel',
+  //         },
+  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //       ],
+  //       { cancelable: false },
+  //     );
 
-  }
+  //   }, geoOptions);
+
+  // }
 
   render() {
     return (
@@ -118,13 +129,13 @@ class App extends Component<Props> {
         </Header>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <Text style={{ color: "black" }}>Are you ready for an adventure?</Text>
-          <Text style={{ color: "black", marginTop: 15 }}>Click the "Star Date" tab.</Text>
+          <Text style={{ color: "black", marginTop: 15 }}>Click the "Start Date" tab.</Text>
 
           <Text style={{ color: "blue", marginTop: 20 }}>
-            Your Latitude: {this.state.location.lat}
+            Your Latitude: {this.state.lat}
           </Text>
           <Text style={{ color: "blue" }}>
-            Your Longitude: {this.state.location.lon}
+            Your Longitude: {this.state.lon}
           </Text>
         </View>
       </Container>
