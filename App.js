@@ -13,7 +13,9 @@ import { createStackNavigator, createAppContainer, createBottomTabNavigator } fr
 import ChatScreen from './src/containers/ChatScreen';
 import styles from './styles.js';
 
-type Props = {};
+type Props = {
+  styles: styles
+};
 class App extends Component<Props> {
   constructor(props) {
     super(props);
@@ -66,14 +68,14 @@ class App extends Component<Props> {
 
   render() {
     return (
-      <Container style={{ backgroundColor: '#FFE6E6' }} >
+      <Container style={ styles.container.backgroundColor } >
         <Header noLeft>
           <Left>
             <Button transparent
               onPress={this.getHelp}
             >
               <Icon
-                style={{ fontSize: 26, color: 'red' }}
+                style={ styles.iconQuestion }
                 type="FontAwesome"
                 name="question-circle" />
             </Button>
@@ -87,18 +89,18 @@ class App extends Component<Props> {
             >
               <Icon
                 type="FontAwesome"
-                style={{ fontSize: 20, color: 'red' }}
+                style={styles.iconLocation}
                 name="map-pin" />
             </Button>
           </Right>
         </Header>
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <Text style={{ color: "black" }}>Are you ready for an adventure?</Text>
-          <Text style={{ color: "black", marginTop: 15 }}>Click the "Start Date" tab.</Text>
-          <Text style={{ color: "blue", marginTop: 20 }}>
+        <View style={styles.container}>
+          <Text style={ styles.blackText }>Are you ready for an adventure?</Text>
+          <Text style={ styles.introText}>Click the "Start Date" tab.</Text>
+          <Text style={styles.introText2}>
             Your Latitude: {this.state.lat}
           </Text>
-          <Text style={{ color: "blue" }}>
+          <Text style={ styles.blueText }>
             Your Longitude: {this.state.lon}
           </Text>
         </View>
@@ -107,14 +109,12 @@ class App extends Component<Props> {
   }
 }
 
-
 const TabNavigator = createBottomTabNavigator(
   {
     "Home": App,
     "Start Date": ChatScreen,
   }
 );
-
 
 export default createAppContainer(TabNavigator);
 

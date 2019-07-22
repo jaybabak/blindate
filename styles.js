@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#FFE6E6',
     },
     welcome: {
         fontSize: 20,
@@ -17,6 +17,28 @@ const styles = StyleSheet.create({
         color: '#333333',
         marginBottom: 5,
     },
+    iconQuestion: {
+        fontSize: 26,
+        color: 'red'
+    },
+    iconLocation: {
+        fontSize: 20,
+        color: 'red'
+    },
+    blueText: {
+        color: 'blue'
+    },
+    blackText: {
+        color: 'black'
+    },
+    introText: {
+        color: 'black',
+        marginTop: 15
+    },
+    introText2: {
+        color: 'blue',
+        marginTop: 20
+    }
 });
 
 export default styles;
