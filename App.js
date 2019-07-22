@@ -38,12 +38,15 @@ class App extends Component<Props> {
 
   getLocation() {
 
-    navigator.geolocation.requestAuthorization();
-
     var geoOptions = {
       enableHighAccuracy: true,
       maximumAge: 1000 * 60 * 60,
     }
+
+    navigator.geolocation.setRNConfiguration(geoOptions);
+    navigator.geolocation.requestAuthorization();
+
+  
 
     var that = this;
 
@@ -118,7 +121,7 @@ class App extends Component<Props> {
         </Header>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <Text style={{ color: "black" }}>Are you ready for an adventure?</Text>
-          <Text style={{ color: "black", marginTop: 15 }}>Click the "Star Date" tab.</Text>
+          <Text style={{ color: "black", marginTop: 15 }}>Click the "Start Date" tab.</Text>
 
           <Text style={{ color: "blue", marginTop: 20 }}>
             Your Latitude: {this.state.location.lat}
