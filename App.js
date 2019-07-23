@@ -14,7 +14,8 @@ import ChatScreen from './src/containers/ChatScreen';
 import styles from './styles.js';
 
 type Props = {
-  styles: styles
+  styles: styles,
+  navigator: navigator
 };
 class App extends Component<Props> {
   constructor(props) {
@@ -72,7 +73,7 @@ class App extends Component<Props> {
         <Header noLeft>
           <Left>
             <Button transparent
-              onPress={this.getHelp}
+              onPress={ this.getHelp }
             >
               <Icon
                 style={ styles.iconQuestion }
@@ -85,23 +86,23 @@ class App extends Component<Props> {
           </Body>
           <Right>
             <Button transparent
-              onPress={this.getLocation}
+              onPress={ this.getLocation }
             >
               <Icon
                 type="FontAwesome"
-                style={styles.iconLocation}
+                style={ styles.iconLocation }
                 name="map-pin" />
             </Button>
           </Right>
         </Header>
         <View style={styles.container}>
           <Text style={ styles.blackText }>Are you ready for an adventure?</Text>
-          <Text style={ styles.introText}>Click the "Start Date" tab.</Text>
-          <Text style={styles.introText2}>
-            Your Latitude: {this.state.lat}
+          <Text style={ styles.introText }>Click the "Start Date" tab.</Text>
+          <Text style={ styles.introText2 }>
+            Your Latitude: {this.state.lat }
           </Text>
           <Text style={ styles.blueText }>
-            Your Longitude: {this.state.lon}
+            Your Longitude: { this.state.lon}
           </Text>
         </View>
       </Container>
