@@ -3,6 +3,9 @@ package com.app;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.voximplant.reactnative.VoxImplantReactPackage;
+import com.wix.reactnativenotifications.RNNotificationsPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -24,6 +27,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new VoxImplantReactPackage(),
+            new RNNotificationsPackage(),
+            new AsyncStoragePackage(),
             new RNGestureHandlerPackage()
       );
     }

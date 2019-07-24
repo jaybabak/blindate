@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Animated, Alert, Platform, StyleSheet, Text, View } from 'react-native';
 import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, } from 'native-base';
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
+import VoxImplant from "react-native-voximplant";
 
 class ChatScreen extends React.Component {
     constructor(props) {

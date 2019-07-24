@@ -82,7 +82,7 @@ class App extends Component<Props> {
             </Button>
           </Left>
           <Body>
-            <Title>BlindDate</Title>
+            <Title>BlindDatee</Title>
           </Body>
           <Right>
             <Button transparent
