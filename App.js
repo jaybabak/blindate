@@ -11,7 +11,7 @@ import { Animated, Alert, Platform, StyleSheet, Text, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Input, Item, Spinner  } from 'native-base';
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
-import { Voximplant } from "react-native-voximplant";
+import { Voximplant, VIClient } from "react-native-voximplant";
 import ChatScreen from './src/containers/ChatScreen';
 import styles from './styles.js';
 
@@ -136,28 +136,35 @@ class App extends Component<Props> {
 
   componentDidMount(){
 
-    this.login();
+    // let clientConfig = {};
+    // let client = Voximplant.getInstance(clientConfig);
+    // console.log(client);
+    // this.clearAsyncStorage();
+
+ 
     // this.login()
 
     this.setState({
       isReady: true
     })
 
-    AsyncStorage.getItem('@access_token').then(tokenVal => {
+    // AsyncStorage.getItem('@access_token').then(tokenVal => {
+ 
+    //   console.log('---------CDM-------');
+    //   console.log(tokenVal);
+    //   console.log('---------CDM-------');
 
-      console.log('---------CDM-------');
-      console.log(tokenVal);
-      console.log('---------CDM-------');
+    //   if(tokenVal){
+    //     this.setState({
+    //       tokens: true
+    //     })
+    //   }
 
-      if(tokenVal){
-        this.setState({
-          tokens: true
-        })
-      }
+    //   // console.log(this.state);
 
-      console.log(this.state);
+    // });
 
-    });
+    this.login();
   }
 
   clearAsyncStorage = async () => {
@@ -318,7 +325,8 @@ async function loginVox(client, that) {
     try {
       const value = await AsyncStorage.getItem('@access_token');
       const username = await AsyncStorage.getItem('@id');
-      // console.log(value);
+      console.log(value);
+      console.log(username);
       if (value !== null) {
         // user already logged in
         let authResultToken = await client.loginWithToken(`${username}@hookie.janu101.voximplant.com`, value );
@@ -327,7 +335,7 @@ async function loginVox(client, that) {
           isReady: true
         });
 
-        console.log(authResultToken);
+        // console.log(authResultToken);
 
         that.setState({
           textHeading: 'Hello ' + authResultToken.displayName + '!'
@@ -338,8 +346,9 @@ async function loginVox(client, that) {
 
       }else {
 
+        
         let authResult = await client.login(`${that.state.id}@hookie.janu101.voximplant.com`, `${that.state.password}`);
-        console.log(authResult);
+        // console.log(authResult);
 
         that.setState({
           textHeading: 'Hello ' + authResult.displayName,

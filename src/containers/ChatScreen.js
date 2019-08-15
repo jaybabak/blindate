@@ -24,8 +24,8 @@ class ChatScreen extends React.Component {
         clientConfig.enableVideo = true; // Android only option
         let client = Voximplant.getInstance(clientConfig);
 
-        login(client, that);
-
+        console.log(client);
+        
         const timerz = setInterval(() => {
             this.tick()
             if (this.state.timer == 0) {

@@ -28,7 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new VoxImplantReactPackage(),
-            new RNNotificationsPackage(),
+            new RNNotificationsPackage(MainApplication.this),
             new AsyncStoragePackage(),
             new RNGestureHandlerPackage()
       );
