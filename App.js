@@ -214,13 +214,13 @@ class App extends Component<Props> {
       </View>
     )
 
-    console.log(this.state);
+    // console.log(this.state);
 
 
     if (this.state.isReady !== true) {
       return loadingIcon;
     } 
-
+    console.log(this.state.authenticated);
     if (this.state.authenticated == true) {
       mainContentView = authenticatedView;
     }else{
@@ -322,14 +322,19 @@ async function loginVox(client, that) {
       await client.connect();
     }
 
+    
     try {
       const value = await AsyncStorage.getItem('@access_token');
+      const refreshToken = await AsyncStorage.getItem('@refresh_token');
       const username = await AsyncStorage.getItem('@id');
-      console.log(value);
-      console.log(username);
-      if (value !== null) {
+
+      // console.log(value);
+      // console.log(username);
+      // console.log(refreshToken);
+      if (value) {
         // user already logged in
         let authResultToken = await client.loginWithToken(`${username}@hookie.janu101.voximplant.com`, value );
+
         that.setState({
           authenticated: true,
           isReady: true
@@ -345,10 +350,14 @@ async function loginVox(client, that) {
 
 
       }else {
-
         
+        that.clearAsyncStorage();
+
         let authResult = await client.login(`${that.state.id}@hookie.janu101.voximplant.com`, `${that.state.password}`);
-        // console.log(authResult);
+        
+        console.log('------');
+        console.log(authResult);
+        console.log('------');
 
         that.setState({
           textHeading: 'Hello ' + authResult.displayName,
@@ -380,6 +389,10 @@ async function loginVox(client, that) {
 
       }
     } catch (e) {
+      that.setState({
+        authenticated: false,
+        isReady: true
+      });
       // error reading value
     }
 
@@ -399,6 +412,10 @@ async function loginVox(client, that) {
       ],
       { cancelable: false },
     );
+    that.setState({
+      authenticated: false,
+      isReady: true
+    });
   }
 }
 

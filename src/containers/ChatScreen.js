@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import { Animated, Alert, Platform, StyleSheet, View, DeviceEventEmitter } from 'react-native';
-import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text } from 'native-base';
+import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text, Spinner } from 'native-base';
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
 import { Voximplant } from "react-native-voximplant";
+import LinearGradient from 'react-native-linear-gradient';
 
 class ChatScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             timer: 5,
-            bgColor: '#8CC6FF',
+            bgColor: '#707070',
             displayName: 'Anonymous'
         }
         this.tick = this.tick.bind(this);
-        this.onClick = this.onClick.bind(this);
     }
 
     componentDidMount() {
@@ -30,22 +30,10 @@ class ChatScreen extends React.Component {
             this.tick()
             if (this.state.timer == 0) {
                 clearTimeout(timerz);
-                this.setState({ bgColor: 'black', timer: '...' });
+                this.setState({ bgColor: '#FFFFFF', timer: '...' });
             }
         }, 1000)
     }
-
-    onClick() {
-
-        let clientConfig = {};
-        let that = this;
-
-        clientConfig.enableVideo = true; // Android only option
-        let client = Voximplant.getInstance(clientConfig);
-
-        login(client, that);
-    }
-
 
     tick() {
         this.setState({ timer: this.state.timer - 1 });
@@ -55,12 +43,15 @@ class ChatScreen extends React.Component {
     render() {
         return (
             <Container style={{ backgroundColor: this.state.bgColor }}>
-                <Content padder>
-                    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                        <Text style={{ color: "white", fontSize: 76, marginTop: 315 }}>{this.state.timer}</Text>
-                        {/* <Button onPress={this.onClick}><Text>Retry Logging In</Text></Button> */}
-                    </View>
-                </Content>
+                <LinearGradient colors={['#FFFFFF', '#CED1D8', this.state.bgColor ]} style={styles.linearGradient}>
+                    <Content padder>
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                            {/* <Text style={{ color: "white", fontSize: 24, marginTop: 315 }}>{this.state.timer}</Text> */}
+                            <Spinner style={{ marginTop: 315 }} color='white' />
+       
+                        </View>
+                    </Content>
+                </LinearGradient>
             </Container>
         );
     }
@@ -87,5 +78,23 @@ async function login(client, that) {
         console.log(e);
     }
 }
+
+// Later on in your styles..
+var styles = StyleSheet.create({
+    linearGradient: {
+        flex: 1,
+        paddingLeft: 15,
+        paddingRight: 15,
+        borderRadius: 5
+    },
+    buttonText: {
+        fontSize: 18,
+        fontFamily: 'Gill Sans',
+        textAlign: 'center',
+        margin: 10,
+        color: '#ffffff',
+        backgroundColor: 'transparent',
+    },
+});
 
 export default ChatScreen;
