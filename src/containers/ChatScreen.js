@@ -5,6 +5,13 @@ import { createStackNavigator, createAppContainer, createBottomTabNavigator } fr
 import { Voximplant } from "react-native-voximplant";
 import LinearGradient from 'react-native-linear-gradient';
 
+let clientConfig = {};
+
+clientConfig.saveLogsToFile = true; //ios only
+clientConfig.enableVideo = true; // Android only option
+
+let client = Voximplant.getInstance(clientConfig);
+
 class ChatScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -18,14 +25,12 @@ class ChatScreen extends React.Component {
 
     componentDidMount() {
 
-        let clientConfig = {};
+        // console.log(client);
+
         let that = this;
 
-        clientConfig.enableVideo = true; // Android only option
-        let client = Voximplant.getInstance(clientConfig);
+        makeCall(that)
 
-        console.log(client);
-        
         const timerz = setInterval(() => {
             this.tick()
             if (this.state.timer == 0) {
@@ -34,6 +39,7 @@ class ChatScreen extends React.Component {
             }
         }, 1000)
     }
+
 
     tick() {
         this.setState({ timer: this.state.timer - 1 });
@@ -57,26 +63,76 @@ class ChatScreen extends React.Component {
     }
 }
 
-async function login(client, that) {
-    try {
-        let state = await client.getClientState();
-        console.log(state);
+async function makeCall(stateMap) {
 
-        if (state === Voximplant.ClientState.DISCONNECTED) {
-                await client.connect();
+    // console.log(client);
+
+    const callSettings = {
+        video: {
+            sendVideo: true,
+            receiveVideo: true,
         }
+    };
 
-        let authResult = await client.login("testuser1@hookie.janu101.voximplant.com", "123456");
-        console.log(authResult);
 
-        // that.setState({
-        //     displayName: authResult.displayName
-        // });
+    // create and start a call
+    let call = await client.call("testuser1", callSettings);
 
-    } catch (e) {
-        console.log(e.name + e.message);
-        console.log(e);
-    }
+    call.on(Voximplant.CallEvents.Connected, _onCallConnected);
+
+    call.on(Voximplant.CallEvents.Failed, _failedCall);
+
+    call.on(Voximplant.CallEvents.EndpointAdded, _onCallEndpointAdded);
+
+
+    call.on(Voximplant.CallEvents.InfoReceived, _onInfoRecieved);
+
+    client.on(Voximplant.ClientEvents.IncomingCall, _incomingCall);
+
+
+    // client.on(Voximplant.ClientEvents.Failed, _failedCall);
+}
+
+function _onInfoRecieved(event) {
+    console.log('_onInfoRecieved');
+    console.log(event);
+}
+
+function _onCallDisconnected(event) {
+    console.log('_onCallDisconnected');
+    console.log(event);
+}
+
+function _onCallEndpointAdded(event) {
+    console.log('_onCallEndpointAdded');
+    console.log(event);
+}
+
+function _failedCall(event) {
+    // console.log(statesMap)
+    console.log(event);
+    // 'event' here is the instance of
+    // the Voximplant.CallEvents.Connected object;
+    // use event.call to get the instance of Voximplant.Call
+}
+
+function _onCallConnected(event) {
+    console.log(event);
+    // 'event' here is the instance of
+    // the Voximplant.CallEvents.Connected object;
+    // use event.call to get the instance of Voximplant.Call
+}
+
+function _incomingCall(event) {
+    console.log('======incoming call=======');
+    console.log(event);
+    const callSettings = {
+        video: {
+            sendVideo: event.video,
+            receiveVideo: event.video
+        }
+    };
+    event.call.answer(callSettings);
 }
 
 // Later on in your styles..

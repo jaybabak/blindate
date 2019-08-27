@@ -86,7 +86,7 @@ class App extends Component<Props> {
 
   login(){
 
-    console.log(this.state);
+    // console.log(this.state);
 
     let clientConfig = {};
     let that = this;
@@ -104,7 +104,7 @@ class App extends Component<Props> {
 
   logout(){
 
-    console.log(this.state);
+    // console.log(this.state);
 
     let clientConfig = {};
     let that = this;
@@ -135,34 +135,9 @@ class App extends Component<Props> {
   }
 
   componentDidMount(){
-
-    // let clientConfig = {};
-    // let client = Voximplant.getInstance(clientConfig);
-    // console.log(client);
-    // this.clearAsyncStorage();
-
- 
-    // this.login()
-
     this.setState({
       isReady: true
     })
-
-    // AsyncStorage.getItem('@access_token').then(tokenVal => {
- 
-    //   console.log('---------CDM-------');
-    //   console.log(tokenVal);
-    //   console.log('---------CDM-------');
-
-    //   if(tokenVal){
-    //     this.setState({
-    //       tokens: true
-    //     })
-    //   }
-
-    //   // console.log(this.state);
-
-    // });
 
     this.login();
   }
@@ -220,7 +195,7 @@ class App extends Component<Props> {
     if (this.state.isReady !== true) {
       return loadingIcon;
     } 
-    console.log(this.state.authenticated);
+    // console.log(this.state.authenticated);
     if (this.state.authenticated == true) {
       mainContentView = authenticatedView;
     }else{
