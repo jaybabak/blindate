@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Input, Item, Spinner  } from 'native-base';
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
 import { Voximplant, VIClient } from "react-native-voximplant";
-import ChatScreen from './src/containers/ChatScreen';
+import ChatScreen from './src/containers/ChatScreen/ChatScreen';
 import styles from './styles.js';
 
 type Props = {
@@ -131,7 +131,7 @@ class App extends Component<Props> {
   }
 
   navigateToChatScreen(){
-    this.props.navigation.navigate('Start Date');
+    this.props.navigation.navigate('Start Date'); //pass params to this object to pass current vixomplant instance
   }
 
   componentDidMount(){
