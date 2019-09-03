@@ -51,7 +51,7 @@ class ChatScreen extends React.Component {
 
         // Voximplant.EndpointEvents.
 
-        this.makeCall(false);
+        this.makeCall();
     }
 
 
@@ -192,30 +192,24 @@ class ChatScreen extends React.Component {
 
     render() {
         return (
-            <Container style={{ backgroundColor: '#FFF' }}>
-                {/* <LinearGradient colors={['#EC0000', '#FFC900', this.state.bgColor ]} style={styles.linearGradient}> */}
-                    <Content>
-                        <View style={styles.view}>
-                            {/* <Text style={{ color: "white", fontSize: 24, marginTop: 315 }}>{this.state.timer}</Text> */}
-                            {/* <Spinner style={{ marginTop: 315 }} color='white' /> */}
-                            
-                            <Voximplant.VideoView
-                                style={styles.videoStyles}
-                                videoStreamId={this.state.localVideoStreamId}
-                                // showOnTop={true}
-                                scaleType={Voximplant.RenderScaleType.SCALE_FIT} />
-                            {this.state.isVideoSent ? (
-                                <Voximplant.VideoView
-                                    style={styles.videoStyles}
-                                    showOnTop={true}
-                                    videoStreamId={this.state.remoteVideoStreamId}
-                                    scaleType={Voximplant.RenderScaleType.SCALE_FIT} />
-                             ) : null}    
+            <View style={styles.view}>
+                {/* <Text style={{ color: "white", fontSize: 24, marginTop: 315 }}>{this.state.timer}</Text> */}
+                {/* <Spinner style={{ marginTop: 315 }} color='white' /> */}
 
-                        </View>
-                    </Content>
-                {/* </LinearGradient> */}
-            </Container>
+                <Voximplant.VideoView
+                    style={styles.videoStylesLocal}
+                    videoStreamId={this.state.localVideoStreamId}
+                    showOnTop={true}
+                    scaleType={Voximplant.RenderScaleType.SCALE_FIT} />
+                {this.state.isVideoSent ? (
+                    <Voximplant.VideoView
+                        style={styles.videoStyles}
+                        videoStreamId={this.state.remoteVideoStreamId}
+                        scaleType={Voximplant.RenderScaleType.SCALE_FILL} />
+                ) : null}
+
+            </View>
+
         );
     }
 }

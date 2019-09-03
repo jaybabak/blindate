@@ -1,28 +1,29 @@
 
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const styles = StyleSheet.create({
     videoStyles: {
         // flex: 1,
         // justifyContent: 'center',
         // alignItems: 'flex-start',
-        padding: 20,
-        width: "100%", 
-        height: "100%", 
-        backgroundColor: "black",
+        // padding: 5,
+        width: Dimensions.get('window').width, 
+        height: Dimensions.get('window').height, 
+        // backgroundColor: "black",
         flex: 1,
         // paddingLeft: 15,
         // paddingRight: 15,
         // borderRadius: 5
     },
     videoStylesLocal: {
-        // flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'flex-start',
-        padding: 20,
-        width: "100%", 
-        height: "40%", 
-        backgroundColor: "white"
+        position: 'absolute',
+        right: 20,
+        bottom: 20,
+        width: 100,
+        height: 150, 
+        zIndex: 100,
+        borderRadius: 6
+        // backgroundColor: "black",
     },
     linearGradient: {
         flex: 1,
@@ -39,12 +40,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     view: {
+        position: 'relative',
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 4,
-        borderWidth: 0.5,
-        borderColor: 'red'
+        alignItems: "stretch",
+        // justifyContent: "",
+        alignContent: 'flex-start'
+        // borderRadius: 4,
+        // borderWidth: 0.5,
+        // borderColor: 'red'
     }
 });
 
