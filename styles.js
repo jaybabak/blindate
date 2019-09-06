@@ -35,11 +35,11 @@ const styles = StyleSheet.create({
     },
     iconQuestion: {
         fontSize: 26,
-        color: 'red'
+        color: '#F39034'
     },
     iconLocation: {
         fontSize: 20,
-        color: 'red'
+        color: '#F39034'
     },
     blueText: {
         color: 'blue'

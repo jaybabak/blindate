@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Animated, Alert, Platform, StyleSheet, View, DeviceEventEmitter } from 'react-native';
-import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text, Spinner } from 'native-base';
+import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text, Spinner, Footer, FooterTab } from 'native-base';
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
 import { Voximplant, Preview } from "react-native-voximplant";
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,7 +18,6 @@ class ChatScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            timer: 5,
             bgColor: '#EC0000',
             displayName: 'Anonymous',
             localVideoStreamId: '',
@@ -29,6 +28,7 @@ class ChatScreen extends React.Component {
         this.callId = null;
         this.callEvent = null;
         this.makeCall = this.makeCall.bind(this);
+        this.endCall = this.endCall.bind(this);
         this._onInfoRecieved = this._onInfoRecieved.bind(this);
         this._onCallDisconnected = this._onCallDisconnected.bind(this);
         this._onCallEndpointAdded = this._onCallEndpointAdded.bind(this);
@@ -39,6 +39,7 @@ class ChatScreen extends React.Component {
         this._onRemoteVideoStreamAdded = this._onRemoteVideoStreamAdded.bind(this);
         this._incomingCall = this._incomingCall.bind(this);
         this._onInfoUpdated = this._onInfoUpdated.bind(this);
+        this.removeCall = this.removeCall.bind(this);
     }
 
     componentDidMount() {
@@ -49,9 +50,29 @@ class ChatScreen extends React.Component {
 
         client.on(Voximplant.ClientEvents.IncomingCall, this._incomingCall);
 
-        // Voximplant.EndpointEvents.
-
         this.makeCall();
+    }
+
+    componentWillUnmount() {
+
+        console.log('component unmounted');
+
+        this.callEvent = null;
+        this.callId = null;
+
+        this.setState({
+            remoteVideoStreamId: null,
+            localVideoStreamId: null,
+            isVideoSent: false,
+        });
+        // this.props.navigation.navigate('Home');
+
+        console.log(this.props.navigation);
+        // this.props.navigation.navigate('Home');
+        this.props.navigation.goBack();
+
+        // console.log(client);
+
     }
 
 
@@ -97,6 +118,20 @@ class ChatScreen extends React.Component {
         call.on(Voximplant.CallEvents.InfoReceived, this._onInfoRecieved);
     }
 
+    async endCall() {
+        console.log('Hang Up!');
+        this.callEvent.hangup();
+    }
+
+    removeCall(call) {
+        console.log(`CallManager: removeCall: ${call.callId}`);
+        if (this.callEvent && (this.callEvent.callId === call.callId)) {
+            this.componentWillUnmount();
+        } else if (this.call) {
+            console.warn('CallManager: removeCall: call id mismatch');
+        }
+    }
+
     _onInfoRecieved(event) {
         console.log('_onInfoRecieved');
         console.log(event);
@@ -115,6 +150,8 @@ class ChatScreen extends React.Component {
     _onCallDisconnected(event) {
         console.log('_onCallDisconnected');
         console.log(event);
+
+        this.removeCall(event.call);
     }
 
     _incomingCall(event) {
@@ -191,25 +228,43 @@ class ChatScreen extends React.Component {
 
 
     render() {
+
+        // if (!this.state.remoteVideoStreamId) {
+        //     return (<Spinner style={{ marginTop: 315 }} color='#1C1F29' />);
+        // }
+
         return (
-            <View style={styles.view}>
-                {/* <Text style={{ color: "white", fontSize: 24, marginTop: 315 }}>{this.state.timer}</Text> */}
-                {/* <Spinner style={{ marginTop: 315 }} color='white' /> */}
+            <Container style={{ backgroundColor: 'white' }}>
+                {/* <LinearGradient colors={['#EC0000', '#FFC900', '#FFF' ]} style={styles.linearGradient}> */}
+                    {/* // <Content> */}
+                        <View style={styles.view}>
+                
+                            
+                            <Voximplant.VideoView
+                                style={styles.videoStylesLocal}
+                                videoStreamId={this.state.localVideoStreamId}
+                                showOnTop={true}
+                                scaleType={Voximplant.RenderScaleType.SCALE_FIT} />
+                            {this.state.isVideoSent ? (
+                                <React.Fragment>
+                                    <Voximplant.VideoView
+                                        style={styles.videoStyles}
+                                        videoStreamId={this.state.remoteVideoStreamId}
+                                        scaleType={Voximplant.RenderScaleType.SCALE_FILL} />
+                                </React.Fragment>
+                             ) : null}    
 
-                <Voximplant.VideoView
-                    style={styles.videoStylesLocal}
-                    videoStreamId={this.state.localVideoStreamId}
-                    showOnTop={true}
-                    scaleType={Voximplant.RenderScaleType.SCALE_FIT} />
-                {this.state.isVideoSent ? (
-                    <Voximplant.VideoView
-                        style={styles.videoStyles}
-                        videoStreamId={this.state.remoteVideoStreamId}
-                        scaleType={Voximplant.RenderScaleType.SCALE_FILL} />
-                ) : null}
-
-            </View>
-
+                        </View>
+                    <Footer>
+                        <FooterTab>
+                            <Button onPress={this.endCall} style={styles.btnAction} full>
+                                <Text style={styles.btnActionText}>NEXT</Text>
+                                </Button>
+                            </FooterTab>
+                    </Footer>
+                    {/* // </Content> */}
+                {/* </LinearGradient> */}
+            </Container>
         );
     }
 }
@@ -218,3 +273,28 @@ class ChatScreen extends React.Component {
 
 
 export default ChatScreen;
+
+
+// // <Container style={{ backgroundColor: 'white' }}>
+// {/* <LinearGradient colors={['#EC0000', '#FFC900', this.state.bgColor ]} style={styles.linearGradient}> */ }
+// <Content>
+//     <View style={styles.view}>
+//         {/* <Text style={{ color: "white", fontSize: 24, marginTop: 315 }}>{this.state.timer}</Text> */}
+//         {/* <Spinner style={{ marginTop: 315 }} color='white' /> */}
+
+//         <Voximplant.VideoView
+//             style={styles.videoStylesLocal}
+//             videoStreamId={this.state.localVideoStreamId}
+//             showOnTop={true}
+//             scaleType={Voximplant.RenderScaleType.SCALE_FIT} />
+//         {this.state.isVideoSent ? (
+//             <Voximplant.VideoView
+//                 style={styles.videoStyles}
+//                 videoStreamId={this.state.remoteVideoStreamId}
+//                 scaleType={Voximplant.RenderScaleType.SCALE_FIT} />
+//         ) : null}
+
+//     </View>
+// </Content>
+// {/* </LinearGradient> */ }
+//             </Container >

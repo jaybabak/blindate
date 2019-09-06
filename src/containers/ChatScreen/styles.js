@@ -22,7 +22,12 @@ const styles = StyleSheet.create({
         width: 100,
         height: 150, 
         zIndex: 100,
-        borderRadius: 6
+        //remove the white border top and bottom
+        borderRadius: 6,
+        borderRadius: 4,
+        borderWidth: 2.5,
+        borderColor: 'white',
+        backgroundColor: 'white'
         // backgroundColor: "black",
     },
     linearGradient: {
@@ -48,6 +53,14 @@ const styles = StyleSheet.create({
         // borderRadius: 4,
         // borderWidth: 0.5,
         // borderColor: 'red'
+    },
+    btnAction: {
+        backgroundColor: 'black',
+        color: 'white',
+        borderTopColor: 'black'
+    },
+    btnActionText: {
+        color: 'white'
     }
 });
 

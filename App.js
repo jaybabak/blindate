@@ -28,6 +28,7 @@ class App extends Component<Props> {
         lon: null,
         city: null,
       },
+      locationNow: '',
       id: null,
       password: null,
       authenticated: false,
@@ -48,10 +49,13 @@ class App extends Component<Props> {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+          console.log('lat: ', position.coords.latitude);
+          console.log('long: ', position.coords.longitude);
           this.setState({
           lat:position.coords.latitude,
           lon: position.coords.longitude,
-          city: position.timestamp
+          city: position.timestamp,
+          locationNow: `Your location is: ${position.coords.latitude}/${position.coords.longitude}`
         })
       },
       (error) => {
@@ -171,7 +175,7 @@ class App extends Component<Props> {
       </View>
     )
 
-    var loadingIcon = (<Spinner style={styles.spinner} color='red' />);
+    var loadingIcon = (<Spinner style={styles.spinner} color='#F39034' />);
       
     var loginFormNoTextInput = (
       <View style={styles.containerCenter}>
@@ -186,6 +190,7 @@ class App extends Component<Props> {
         <Button block dark onPress={this.navigateToChatScreen}>
           <Text style={styles.buttonSubmit}>Start my date!</Text>
         </Button>
+        <Text>{this.state.locationNow}</Text>
       </View>
     )
 
@@ -257,8 +262,8 @@ class App extends Component<Props> {
             <Text style={styles.buttonSubmit}>Login</Text>
           </Button>
         </View> */}
-        {mainContentView}
 
+        {mainContentView}
       </Container>
     );
   }
@@ -318,7 +323,7 @@ async function loginVox(client, that) {
         // console.log(authResultToken);
 
         that.setState({
-          textHeading: 'Hello ' + authResultToken.displayName + '!'
+          textHeading: 'Ready ' + authResultToken.displayName + '?'
         });
         
         // that.props.navigation.navigate('Start Date');
@@ -394,12 +399,41 @@ async function loginVox(client, that) {
   }
 }
 
+const HomeStack = createStackNavigator(
+  {
+  "Home": App,
+  "Start Date": ChatScreen,
+  },
+  {
+    headerMode: 'none'
+  }
+);
+
+
 const TabNavigator = createBottomTabNavigator(
   {
     "Home": App,
     "Start Date": ChatScreen,
+  },
+  {
+    tabBarOptions: {
+      activeBackgroundColor: '#1C1F29',
+      labelStyle: {
+        fontSize: 12,
+        color: 'white',
+        paddingBottom: 15,
+        textTransform: 'uppercase'
+      },
+      style: {
+        backgroundColor: '#1C1F29',
+        paddingBottom: 0,
+        height: 50,
+        borderTopColor: 'black'
+        // marginBottom: 20
+      }
+    }
   }
 );
 
-export default createAppContainer(TabNavigator);
+export default createAppContainer(HomeStack);
 
