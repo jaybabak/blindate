@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     },
     containerBody: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'flex-start',
         padding: 20
         // backgroundColor: '#E2E2E2',
@@ -35,18 +35,25 @@ const styles = StyleSheet.create({
     },
     iconQuestion: {
         fontSize: 26,
-        color: '#F39034'
+        color: 'red'
     },
     iconLocation: {
         fontSize: 20,
-        color: '#F39034'
+        color: 'red'
     },
     blueText: {
         color: 'blue'
     },
+    redText: {
+        color: 'red'
+    },
     blackText: {
         color: 'black',
         marginTop: 10,
+    },
+    whiteText: {
+        color: 'white',
+        // marginTop: 10,
     },
     introText: {
         color: 'black',
@@ -54,7 +61,13 @@ const styles = StyleSheet.create({
         fontSize: 26
     },
     buttonSubmit: {
+        marginTop: 10,
         color: 'white',
+    },
+    buttonRegister: {
+        backgroundColor: 'red',
+        marginTop: 10,
+        color: 'blue'
     },
     spinner: {
         flex: 1,

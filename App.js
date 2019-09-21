@@ -13,13 +13,10 @@ import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Inp
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
 import { Voximplant, VIClient } from "react-native-voximplant";
 import ChatScreen from './src/containers/ChatScreen/ChatScreen';
+import RegisterScreen from './src/containers/RegisterScreen/RegisterScreen';
 import styles from './styles.js';
 
-type Props = {
-  styles: styles,
-  navigator: navigator
-};
-class App extends Component<Props> {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -43,6 +40,7 @@ class App extends Component<Props> {
     this.changeUsername = this.changeUsername.bind(this);
     this.changePassword = this.changePassword.bind(this);
     this.navigateToChatScreen = this.navigateToChatScreen.bind(this);
+    this.navigateToRegisterScreen = this.navigateToRegisterScreen.bind(this);
   }
 
   getLocation() {
@@ -138,6 +136,11 @@ class App extends Component<Props> {
     this.props.navigation.navigate('Start Date'); //pass params to this object to pass current vixomplant instance
   }
 
+  navigateToRegisterScreen(){
+    console.log('Navigating to screen!');
+    this.props.navigation.navigate('Register'); //pass params to this object to pass current vixomplant instance
+  }
+
   componentDidMount(){
     this.setState({
       isReady: true
@@ -151,6 +154,12 @@ class App extends Component<Props> {
   }
 
   render() {
+
+    var loadingIcon = (<Spinner style={styles.spinner} color='#F39034' />);
+
+    if (this.state.isReady !== true) {
+      return loadingIcon;
+    }
 
     var loginForm = (
       <View style={styles.containerBody}>
@@ -169,14 +178,16 @@ class App extends Component<Props> {
             onChangeText={this.changePassword}
           />
         </Item>
-        <Button block dark onPress={this.login}>
-          <Text style={styles.buttonSubmit}>Login</Text>
+        <Button style={styles.buttonSubmit} block dark onPress={this.login}>
+          <Text style={styles.whiteText}>Login</Text>
+        </Button>
+
+        <Button style={styles.buttonRegister} block bordered danger onPress={this.navigateToRegisterScreen}>
+          <Text style={styles.whiteText}>Sign-up with a new account!</Text>
         </Button>
       </View>
     )
 
-    var loadingIcon = (<Spinner style={styles.spinner} color='#F39034' />);
-      
     var loginFormNoTextInput = (
       <View style={styles.containerCenter}>
         {loadingIcon}
@@ -194,12 +205,6 @@ class App extends Component<Props> {
       </View>
     )
 
-    // console.log(this.state);
-
-
-    if (this.state.isReady !== true) {
-      return loadingIcon;
-    } 
     // console.log(this.state.authenticated);
     if (this.state.authenticated == true) {
       mainContentView = authenticatedView;
@@ -240,27 +245,8 @@ class App extends Component<Props> {
             </Button>
           </Right>
         </Header>
-        <View style={styles.container}>
-         
-        </View>
-        {/* <View style={styles.containerBody}>
-          <Item regular>
-            <Input 
-              autoCapitalize='none'
-              placeholder='Username' 
-              onChangeText={this.changeUsername}
-            />
-          </Item>
-          <Item regular>
-            <Input 
-              secureTextEntry={true}
-              placeholder='Password' 
-              onChangeText={this.changePassword}
-            />
-          </Item>
-          <Button block dark onPress={this.login}>
-            <Text style={styles.buttonSubmit}>Login</Text>
-          </Button>
+        {/* <View style={styles.container}>
+
         </View> */}
 
         {mainContentView}
@@ -403,6 +389,7 @@ const HomeStack = createStackNavigator(
   {
   "Home": App,
   "Start Date": ChatScreen,
+  "Register": RegisterScreen,
   },
   {
     headerMode: 'none'
