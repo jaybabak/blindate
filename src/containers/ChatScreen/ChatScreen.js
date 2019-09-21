@@ -6,6 +6,19 @@ import { Voximplant, Preview } from "react-native-voximplant";
 import LinearGradient from 'react-native-linear-gradient';
 import styles from './styles.js';
 
+import io from 'socket.io-client';
+const socket = io('http://localhost:3000', {
+//   rejectUnauthorized: false,
+        reconnectionDelay: 1000,
+      reconnection:true,
+      reconnectionAttempts: 10,
+    //   transports: ['websocket'],
+      agent: false, // [2] Please don't set this to true
+      upgrade: false,
+      rejectUnauthorized: false
+});
+
+
 let clientConfig = {};
 
 clientConfig.saveLogsToFile = true; //ios only
@@ -23,6 +36,7 @@ class ChatScreen extends React.Component {
             localVideoStreamId: '',
             remoteVideoStreamId: '',
             isVideoSent: false,
+            endpoint: 'http://localhost:3000'
         }
 
         this.callId = null;
@@ -43,6 +57,31 @@ class ChatScreen extends React.Component {
     }
 
     componentDidMount() {
+
+        const { navigation } = this.props;
+
+
+
+
+        console.dir(socket);
+
+
+        socket.on('connection', () => {
+            console.log("socket connected")
+            socket.emit('connection', {})
+            socket.on('EVENT YOU WANNA LISTEN', (r) => {
+            })
+        })
+
+        socket.on('connect_error', (err) => {
+            console.log(err)
+        })
+
+        socket.on('disconnect', () => {
+            console.log("Disconnected Socket!")
+        })
+
+        socket.emit('connect', 'Sami Joined!');
 
         // console.log(client);
 

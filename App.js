@@ -133,7 +133,7 @@ class App extends Component {
   }
 
   navigateToChatScreen(){
-    this.props.navigation.navigate('Start Date'); //pass params to this object to pass current vixomplant instance
+    this.props.navigation.navigate('Start Date', {test: 'data'}); //pass params to this object to pass current vixomplant instance
   }
 
   navigateToRegisterScreen(){
