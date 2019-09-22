@@ -5,18 +5,19 @@ import { createStackNavigator, createAppContainer, createBottomTabNavigator } fr
 import { Voximplant, Preview } from "react-native-voximplant";
 import LinearGradient from 'react-native-linear-gradient';
 import styles from './styles.js';
-
 import io from 'socket.io-client';
-const socket = io('http://localhost:3000', {
-//   rejectUnauthorized: false,
-        reconnectionDelay: 1000,
-      reconnection:true,
-      reconnectionAttempts: 10,
-    //   transports: ['websocket'],
-      agent: false, // [2] Please don't set this to true
-      upgrade: false,
-      rejectUnauthorized: false
-});
+
+
+// const socket = io('http://localhost:3000', {
+// //   rejectUnauthorized: false,
+//         reconnectionDelay: 1000,
+//       reconnection:true,
+//       reconnectionAttempts: 10,
+//     //   transports: ['websocket'],
+//       agent: false, // [2] Please don't set this to true
+//       upgrade: false,
+//       rejectUnauthorized: false
+// });
 
 
 let clientConfig = {};
@@ -36,9 +37,14 @@ class ChatScreen extends React.Component {
             localVideoStreamId: '',
             remoteVideoStreamId: '',
             isVideoSent: false,
-            endpoint: 'http://localhost:3000'
         }
 
+        this.socket = io('http://localhost:3000', {
+            reconnectionDelay: 1000,
+            reconnection:true,
+            agent: false, // [2] Please don't set this to true
+            rejectUnauthorized: false
+        });
         this.callId = null;
         this.callEvent = null;
         this.makeCall = this.makeCall.bind(this);
@@ -59,33 +65,46 @@ class ChatScreen extends React.Component {
     componentDidMount() {
 
         const { navigation } = this.props;
+        let that = this;
 
-
-
-
-        console.dir(socket);
-
-
-        socket.on('connection', () => {
+        this.socket.on('connection', () => {
             console.log("socket connected")
-            socket.emit('connection', {})
-            socket.on('EVENT YOU WANNA LISTEN', (r) => {
-            })
+            console.log("socket emitted test")
+
+            // this.socket.emit('test')
+            // this.socket.emit('connection', {})
+
+
+            // this.socket.emit('connection', { data: 'Sami Joined!'});
         })
 
-        socket.on('connect_error', (err) => {
+        this.socket.on('load', (data) => {
+
+            console.log("User loaded and connected to system: ", data);
+            
+            this.socket.emit('match', { user: {
+                id: 'USER_ID_CONNECTING_HERE',
+                geo: {
+                    lat: '24.3434',
+                    lon: '-34.03434'
+                }
+            }});
+            
+            // this.socket.emit('connection', { data: 'Sami Joined!'});
+        })
+
+        this.socket.on('paired', (data) => {
+
+            console.log('CONNECT TO: ', data)
+        })
+
+        this.socket.on('connect_error', (err) => {
             console.log(err)
         })
 
-        socket.on('disconnect', () => {
+        this.socket.on('disconnect', () => {
             console.log("Disconnected Socket!")
         })
-
-        socket.emit('connect', 'Sami Joined!');
-
-        // console.log(client);
-
-        let that = this;
 
         client.on(Voximplant.ClientEvents.IncomingCall, this._incomingCall);
 
