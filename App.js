@@ -15,6 +15,7 @@ import { Voximplant, VIClient } from "react-native-voximplant";
 import ChatScreen from './src/containers/ChatScreen/ChatScreen';
 import RegisterScreen from './src/containers/RegisterScreen/RegisterScreen';
 import styles from './styles.js';
+const axios = require('axios');
 
 class App extends Component {
   constructor(props) {
@@ -22,8 +23,7 @@ class App extends Component {
     this.state = {
       location: {
         lat: null,
-        lon: null,
-        city: null,
+        lon: null
       },
       locationNow: '',
       id: null,
@@ -37,24 +37,85 @@ class App extends Component {
     this.getHelp = this.getHelp.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
+    this.getStorageData = this.getStorageData.bind(this);
+    this.setStorageData = this.setStorageData.bind(this);
     this.changeUsername = this.changeUsername.bind(this);
     this.changePassword = this.changePassword.bind(this);
     this.navigateToChatScreen = this.navigateToChatScreen.bind(this);
     this.navigateToRegisterScreen = this.navigateToRegisterScreen.bind(this);
   }
 
-  getLocation() {
+  componentDidMount(){
+    this.setState({
+      isReady: true
+    })
+    
+    
+    this.getLocation()
+  
+    this.login();
+  }
+
+  async getLocation() {
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-          console.log('lat: ', position.coords.latitude);
-          console.log('long: ', position.coords.longitude);
-          this.setState({
-          lat:position.coords.latitude,
-          lon: position.coords.longitude,
-          city: position.timestamp,
-          locationNow: `Your location is: ${position.coords.latitude}/${position.coords.longitude}`
-        })
+      async (position) => {
+
+          this.setState({ 
+            location: {
+              lat:position.coords.latitude,
+              lon: position.coords.longitude
+            },
+            locationNow: `Your location is: ${position.coords.latitude}/${position.coords.longitude}`
+          });
+
+          /* CODE FOR CHECKING USER LOCATION AND UPDATING DB
+          * check first to see if async value is stored lat/lon
+          * if no value is stored than set the lat/lon and also update the db
+          */
+       
+          // try {
+          //   console.log('getting location from async storage');
+          //   var lat = await this.getStorageData('lat');
+          //   var lon = await this.getStorageData('lon');
+            
+          //   console.log(lat, lon);
+          //   if((!lat || !lon) && (lat !== position.coords.latitude || lon !== position.coords.lat)){
+
+          //     await this.setStorageData('lat', position.coords.latitude);
+          //     await this.setStorageData('lon', position.coords.longitude);
+
+              /*
+              * LEFT OFF HERE MAKING A HIT TO THE UPDATE ENDPOINT TO UPDATE THE USER IF LAT/LONG HAS CHANGED OR NOT BEEN SET
+              * -- CANNOT COMPLETE UNTIL USER IS AUTHENTICATED AND HAS ACCESS TOKEN AS AUTHORIZATION TO UPDATE USER VALUE
+              **/
+
+              // var settings = {
+              //       method: 'post',
+              //       url: 'http://localhost:3000/api/update',
+              //       data: {
+              //         email: 'Fred@hotmail.com',
+              //         field: 'location',
+              //         value: {
+              //           lat: "0",
+              //           lon: "0"
+              //         }
+              //       }
+              //     }
+
+              // const updateUserLocationInDB = await axios(settings);
+
+              // console.log(updateUserLocationInDB);
+              // console.log('updated user location in db');
+      
+
+          //   }else {
+          //     console.log('Location same as previous location');
+          //   }
+          // } catch (e) {
+          //   console.log(e);
+          //   // saving error
+          // }
       },
       (error) => {
         console.log(error);
@@ -65,6 +126,31 @@ class App extends Component {
       }
     )
     
+  }
+
+  async getStorageData(key){
+    try {
+      const value = await AsyncStorage.getItem(key)
+      if(value !== null) {
+        // value previously stored
+        return value;
+      }else {
+        return null;
+      }
+    } catch(e) {
+      // error reading value
+    }
+  }
+
+  async setStorageData(key, storeValue){
+    try {
+      const value = await AsyncStorage.setItem(key, storeValue)
+      return 'Stored successfully!';
+    } catch(e) {
+      console.error(e);
+      return false;
+      // error reading value
+    }
   }
 
   getHelp() {
@@ -133,7 +219,7 @@ class App extends Component {
   }
 
   navigateToChatScreen(){
-    this.props.navigation.navigate('Start Date', {test: 'data'}); //pass params to this object to pass current vixomplant instance
+    this.props.navigation.navigate('Start Date', this.state.location); //pass params to this object to pass current vixomplant instance
   }
 
   navigateToRegisterScreen(){
@@ -141,13 +227,6 @@ class App extends Component {
     this.props.navigation.navigate('Register'); //pass params to this object to pass current vixomplant instance
   }
 
-  componentDidMount(){
-    this.setState({
-      isReady: true
-    })
-
-    this.login();
-  }
 
   clearAsyncStorage = async () => {
     AsyncStorage.clear();

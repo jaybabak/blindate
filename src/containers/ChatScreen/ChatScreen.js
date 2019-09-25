@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Animated, Alert, Platform, StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text, Spinner, Footer, FooterTab } from 'native-base';
-import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
-import { Voximplant, Preview } from "react-native-voximplant";
+import AsyncStorage from '@react-native-community/async-storage';
+import { Voximplant } from "react-native-voximplant";
 import LinearGradient from 'react-native-linear-gradient';
 import styles from './styles.js';
 import io from 'socket.io-client';
@@ -62,19 +62,19 @@ class ChatScreen extends React.Component {
         this.removeCall = this.removeCall.bind(this);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
 
         const { navigation } = this.props;
         let that = this;
 
+         const userLocation = navigation.state.params;
+
+
         this.socket.on('connection', () => {
             console.log("socket connected")
-            console.log("socket emitted test")
 
             // this.socket.emit('test')
             // this.socket.emit('connection', {})
-
-
             // this.socket.emit('connection', { data: 'Sami Joined!'});
         })
 
@@ -82,12 +82,9 @@ class ChatScreen extends React.Component {
 
             console.log("User loaded and connected to system: ", data);
             
-            this.socket.emit('match', { user: {
+            this.socket.emit('match', { userLocation: {
                 id: 'USER_ID_CONNECTING_HERE',
-                geo: {
-                    lat: '24.3434',
-                    lon: '-34.03434'
-                }
+                location: userLocation
             }});
             
             // this.socket.emit('connection', { data: 'Sami Joined!'});
@@ -163,6 +160,10 @@ class ChatScreen extends React.Component {
             }
         };
 
+        /* @TODO
+        *  replace .call("testuser1" ...) method with paramter from makeCall function 
+        */
+
         // create and start a call
         let call = await client.call("testuser1", callSettings);
         // setting the current call to callEvent variable
@@ -191,29 +192,24 @@ class ChatScreen extends React.Component {
     }
 
     _onInfoRecieved(event) {
-        console.log('_onInfoRecieved');
-        console.log(event);
+        console.log('_onInfoRecieved', event);
     }
 
     _onInfoUpdated(event) {
-        console.log('_onInfoUpdated');
-        console.log(event);
+        console.log('_onInfoUpdated', event);
     }
 
     async _onCallConnected(event) {
-        console.log('_onCallConnected')
-        console.log(event);
+        console.log('_onCallConnected', event)
     }
 
     _onCallDisconnected(event) {
-        console.log('_onCallDisconnected');
-        console.log(event);
-
+        console.log('_onCallDisconnected', event);
         this.removeCall(event.call);
     }
 
     _incomingCall(event) {
-        console.log('======incoming call=======', event);
+        // console.log('======incoming call=======', event);
         
         const callSettings = {
             video: {
@@ -226,13 +222,13 @@ class ChatScreen extends React.Component {
 
 
     _onCallEndpointAdded(event) {
-        console.log('_onCallEndpointAdded', event);
+        // console.log('_onCallEndpointAdded', event);
 
         this._setupEndpointListeners(event.endpoint, true);
     }
 
     _onEndpointInfoUpdated = (event) => {
-        console.log('_onEndpointInfoUpdated', event);
+        // console.log('_onEndpointInfoUpdated', event);
         event.endpoint.on(Voximplant.EndpointEvents.RemoteVideoStreamAdded, this._onEndpointRemoteVideoStreamAdded);
     };
 
@@ -242,7 +238,7 @@ class ChatScreen extends React.Component {
 
 
     _onEndpointRemoteVideoStreamAdded = (event) => {
-        console.log(event);
+        // console.log(event);
         this.setState({ 
             remoteVideoStreamId: event.videoStream.id,
             isVideoSent: true
@@ -250,28 +246,27 @@ class ChatScreen extends React.Component {
     };
 
     _onEndpointRemoteVideoStreamRemoved = (event) => {
-        console.log(event);
+        // console.log(event);
     };
 
     _failedCall(event) {
         console.log('_failedCall', event);
     }
-
  
     _onLocalVideoAdded(event) {
-        console.log('_onLocalVideoAdded', event);
+        // console.log('_onLocalVideoAdded', event);
         this.setState({
             localVideoStreamId: event.videoStream.id,
         })
     }
 
     _onRemoteVideoAdded(event){
-        console.log('_onRemoteVideoAdded', event);
+        // console.log('_onRemoteVideoAdded', event);
         this.setState({ remoteVideoStreamId: event.videoStream.id });
     }
 
     _onRemoteVideoStreamAdded(event){
-        console.log('_onRemoteVideoStreamAdded', event);
+        // console.log('_onRemoteVideoStreamAdded', event);
         this.setState({ remoteVideoStreamId: event.videoStream.id });
     }
 
