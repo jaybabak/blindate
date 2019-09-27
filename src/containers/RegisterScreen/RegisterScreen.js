@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Animated, Alert, Platform, StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text, Spinner, Footer, FooterTab, Item, Input } from 'native-base';
-import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
 import LinearGradient from 'react-native-linear-gradient';
 import styles from './styles.js';
 
@@ -39,45 +38,50 @@ class RegisterScreen extends React.Component {
                     </Left>
                     <Body>
                         <Title>Register</Title>
-                    </Body>
+                    </Body> 
                     <Right>
         
                     </Right>
                 </Header>
-                {/* <LinearGradient colors={['#EC0000', '#FFC900', '#FFF' ]} style={styles.linearGradient}> */}
+                <LinearGradient colors={['#E6E6E6', '#FFFFFF', '#E2E2E2']} style={styles.linearGradient}>
                     {/* <Content> */}
                         <View style={styles.view}>
                             <View style={styles.container}>
-                                <Item regular>
+                                <Item regular style={styles.formWrapper}>
                                     <Input
+                                        style={styles.formItem}
                                         autoCapitalize='none'
                                         placeholder='First name'
                                         onChangeText={this.changeUsername}
                                     />
                                 </Item>
-                                <Item regular>
+                                <Item regular style={styles.formWrapper}>
                                     <Input
+                                        style={styles.formItem}
                                         autoCapitalize='none'
                                         placeholder='Last name'
                                         onChangeText={this.changeUsername}
                                     />
                                 </Item>
-                                <Item regular>
+                                <Item regular style={styles.formWrapper}>
                                     <Input
+                                        style={styles.formItem}
                                         autoCapitalize='none'
                                         placeholder='Email address'
                                         onChangeText={this.changeUsername}
                                     />
                                 </Item>
-                                <Item regular>
+                                <Item regular style={styles.formWrapper}>
                                     <Input
+                                        style={styles.formItem}
                                         secureTextEntry={true}
                                         placeholder='Password'
                                         onChangeText={this.changePassword}
                                     />
                                 </Item>
-                                <Item regular>
+                                <Item regular style={styles.formWrapper}>
                                     <Input
+                                        style={styles.formItem}
                                         secureTextEntry={true}
                                         placeholder='Phone number'
                                         onChangeText={this.changePassword}
@@ -97,7 +101,7 @@ class RegisterScreen extends React.Component {
                             </FooterTab>
                     </Footer> */}
                     {/* </Content> */}
-                {/* </LinearGradient> */}
+                </LinearGradient>
             </Container>
         );
     }

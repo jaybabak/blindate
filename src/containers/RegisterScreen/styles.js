@@ -32,9 +32,9 @@ const styles = StyleSheet.create({
     },
     linearGradient: {
         flex: 1,
-        paddingLeft: 15,
-        paddingRight: 15,
-        borderRadius: 5
+        paddingLeft: 10,
+        paddingRight: 10,
+        borderRadius: 0
     },
     buttonText: {
         fontSize: 18,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         alignItems: "stretch",
         // justifyContent: "",
         alignContent: 'flex-start',
-        padding: 15
+        padding: 5
         // borderRadius: 4,
         // borderWidth: 0.5,
         // borderColor: 'red'
@@ -70,6 +70,12 @@ const styles = StyleSheet.create({
     iconQuestion: {
         fontSize: 20,
         color: 'red'
+    },
+    formWrapper: {
+        marginTop: 10
+    },
+    formItem: {
+        backgroundColor: 'white',
     }
 });
 

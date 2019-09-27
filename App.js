@@ -11,10 +11,11 @@ import { Animated, Alert, Platform, StyleSheet, Text, View} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Input, Item, Spinner  } from 'native-base';
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from "react-navigation";
-import { Voximplant, VIClient } from "react-native-voximplant";
+import { Voximplant } from "react-native-voximplant";
 import ChatScreen from './src/containers/ChatScreen/ChatScreen';
 import RegisterScreen from './src/containers/RegisterScreen/RegisterScreen';
 import styles from './styles.js';
+import loginManager from './src/util/loginManager';
 const axios = require('axios');
 
 class App extends Component {
@@ -51,7 +52,9 @@ class App extends Component {
     })
     
     this.getLocation()
-    this.login();
+    this.login(); //auto tries to login the user and bring them to homepage
+    // need to add a new click handler for login if empty than return error and prevent subission
+    // otherwise login
   }
 
   login(){
@@ -64,12 +67,11 @@ class App extends Component {
       isReady: false
     })
 
-    loginVox(client, that);
+    loginManager(client, that);
   }
 
   //CURRENTLY THE LOG OUT FUNCTION
   async onLogout() {
-    let that = this;
     let clientConfig = {};
     let client = Voximplant.getInstance(clientConfig);
 
@@ -78,7 +80,10 @@ class App extends Component {
       this.clearAsyncStorage()
       this.setState({
         authenticated: false,
-        tokens: false
+        tokens: false,
+        id: null,
+        password: null
+
       })
 
       Alert.alert(
@@ -281,80 +286,3 @@ const HomeStack = createStackNavigator(
 );
 
 export default createAppContainer(HomeStack);
-
-
-async function loginVox(client, that) {
-
-  try {
-    await client.disconnect();
-  } catch (e) {
-    console.log(e);
-  }
-  
-  try {
-    let state = await client.getClientState();
-
-    if (state === Voximplant.ClientState.DISCONNECTED) {
-      await client.connect();
-    }
-
-    const value = await AsyncStorage.getItem('@access_token');
-    const refreshToken = await AsyncStorage.getItem('@refresh_token');
-    const username = await AsyncStorage.getItem('@id');
-
-    if (value) {
-      // user already logged in
-      let authResultToken = await client.loginWithToken(`${username}@hookie.janu101.voximplant.com`, value );
-      console.log('Token Set');
-
-      that.setState({
-        authenticated: true,
-        isReady: true,
-        textHeading: 'Ready ' + authResultToken.displayName + '?'
-      });
-
-    }else {
-      
-      that.clearAsyncStorage();
-      let authResult = await client.login(`${that.state.id}@hookie.janu101.voximplant.com`, `${that.state.password}`);
-      
-      console.log(authResult);
-
-      const accessToken = ["@access_token", authResult.tokens.accessToken]
-      const accessExpire = ["@access_expire", authResult.tokens.accessExpire]
-      const refreshExpire = ["@refresh_expire", authResult.tokens.refreshExpire]
-      const refreshToken = ["@refresh_token", authResult.tokens.refreshToken]
-      const userName = ["@id", that.state.id]
-      await AsyncStorage.multiSet([accessToken, accessExpire, refreshExpire, refreshToken, userName])
-
-      that.setState({
-        tokens: true,
-        textHeading: 'Hello ' + authResult.displayName,
-        authenticated: true,
-        isReady: true
-      });
-    }
-  } catch (e) {
-    console.log(e.name + e.message);
-    console.log(e);
-
-    Alert.alert(
-      'Error!',
-      'Sorry something is not right, please try again?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ],
-      { cancelable: false },
-    );
-
-    that.setState({
-      authenticated: false,
-      isReady: true
-    });
-  }
-}
