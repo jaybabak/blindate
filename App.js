@@ -16,7 +16,7 @@ import ChatScreen from './src/containers/ChatScreen/ChatScreen';
 import RegisterScreen from './src/containers/RegisterScreen/RegisterScreen';
 import styles from './styles.js';
 import loginManager from './src/util/loginManager';
-const axios = require('axios');
+
 
 class App extends Component {
   constructor(props) {
@@ -45,7 +45,7 @@ class App extends Component {
     this.navigateToRegisterScreen = this.navigateToRegisterScreen.bind(this);
   }
 
-  componentDidMount(){
+  async componentDidMount(){
 
     this.setState({
       isReady: true
@@ -55,6 +55,7 @@ class App extends Component {
     this.login(); //auto tries to login the user and bring them to homepage
     // need to add a new click handler for login if empty than return error and prevent subission
     // otherwise login
+
   }
 
   login(){
@@ -67,7 +68,8 @@ class App extends Component {
       isReady: false
     })
 
-    loginManager(client, that);
+    //change below into a class with login and logout methods
+    loginManager.loginVox(client, that);
   }
 
   //CURRENTLY THE LOG OUT FUNCTION
@@ -83,7 +85,6 @@ class App extends Component {
         tokens: false,
         id: null,
         password: null
-
       })
 
       Alert.alert(

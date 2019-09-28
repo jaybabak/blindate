@@ -72,10 +72,10 @@ const styles = StyleSheet.create({
         color: 'red'
     },
     formWrapper: {
-        marginTop: 10
+        marginTop: 0
     },
     formItem: {
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
     }
 });
 
