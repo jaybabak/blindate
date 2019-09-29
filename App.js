@@ -30,10 +30,11 @@ class App extends Component {
       email: '',
       password: '',
       authenticated: false,
-      textHeading: 'Login',
+      textHeading: '...',
       isReady: false,
       tokens: false,
-      errors: {}
+      errors: {},
+      user: {}
     }
     this.getLocation = this.getLocation.bind(this);
     this.onLogout = this.onLogout.bind(this);
@@ -64,11 +65,11 @@ class App extends Component {
   }
 
   async login(){
-    let client = '';
-    // let clientConfig = {};
+    
     let that = this;
-    // let client = Voximplant.getInstance(clientConfig);
-    // clientConfig.enableVideo = true;
+    let clientConfig = {};
+    let client = Voximplant.getInstance(clientConfig);
+    clientConfig.enableVideo = true;
 
     this.setState({
       isReady: false
@@ -76,36 +77,44 @@ class App extends Component {
 
     try{
 
-      var loginResults = await loginManager.loginUser(client, that.state.email, that.state.password, that);
-
-      this.setState({
-        errors: loginResults,
-        isReady: true
-      })
+      var loginResults = await loginManager.loginUser(that.state.email, that.state.password, that);
 
       if(loginResults.success == true){
         console.log('Succesful login results!', loginResults);
         this.setState({
-          authenticated: true
+          authenticated: true,
+          accessToken: loginResults.accessToken,
         })
+        
+        var getUserData = await loginManager.getUser(this);
+        this.setState({
+          user: getUserData.data.user
+        })
+
+        //try to login to vox
+        var voxLogin = await loginManager.loginVox(client, that);
+
+        if(voxLogin){
+          this.setState({
+            isReady: true
+          })
+        }
       }
       else {
-
         this.setState({
           errors: loginResults,
-          isReady: true
+          isReady: true,
+          password: ''          
         })
-
-        console.log('Failed login results!', loginResults);
+        // console.log('Failed login results!', loginResults);
       }
     }
     catch(err){
+      this.setState({
+        isReady: true
+      })
 
-        this.setState({
-          isReady: true
-        })
-
-        Alert.alert(
+      Alert.alert(
           'Sorry something is wrong',
           'Please check your connection and try again.',
           [
@@ -118,13 +127,8 @@ class App extends Component {
           ],
           { cancelable: false },
       );
-
       console.log(err);
-
     }
-    //change below into a class with login and logout methods
-    // loginManager.loginVox(client, that);
-
   }
 
   //CURRENTLY THE LOG OUT FUNCTION
@@ -290,7 +294,6 @@ class App extends Component {
         <Button block dark onPress={this.navigateToChatScreen}>
           <Text style={styles.buttonSubmit}>Start my date!</Text>
         </Button>
-        <Text>{this.state.locationNow}</Text>
       </View>
     )
 

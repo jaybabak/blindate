@@ -15,59 +15,78 @@ const loginVox = async function (client, that){
 
     console.log('Yayyyy login vox class');
 
-      try {
-    await client.disconnect();
-    let state = await client.getClientState();
+    try {
+        await client.disconnect();
+        let state = await client.getClientState();
 
-    if (state === Voximplant.ClientState.DISCONNECTED) {
-      await client.connect();
+        if (state === Voximplant.ClientState.DISCONNECTED) {
+            await client.connect();
+        }
+
+        const value = await AsyncStorage.getItem('@access_token');
+        const refreshToken = await AsyncStorage.getItem('@refresh_token');
+        const username = await AsyncStorage.getItem('@id');
+
+        if (value) {
+            // user already logged in
+            let authResultToken = await client.loginWithToken(`${username}@hookie.janu101.voximplant.com`, value );
+            console.log('Token Set');
+
+            that.setState({
+                authenticated: true,
+                isReady: true,
+                textHeading: 'Ready ' + authResultToken.displayName + '?'
+            });
+
+            return true;
+
+        }else {
+        
+            that.clearAsyncStorage();
+            let authResult = await client.login(`${that.state.user._id}@hookie.janu101.voximplant.com`, `${that.state.user._id}`);
+            
+            console.log(authResult);
+
+            const accessToken = ["@access_token", authResult.tokens.accessToken]
+            const accessExpire = ["@access_expire", authResult.tokens.accessExpire]
+            const refreshExpire = ["@refresh_expire", authResult.tokens.refreshExpire]
+            const refreshToken = ["@refresh_token", authResult.tokens.refreshToken]
+            const userName = ["@id", that.state.user._id]
+            await AsyncStorage.multiSet([accessToken, accessExpire, refreshExpire, refreshToken, userName])
+
+            that.setState({
+                tokens: true,
+                textHeading: 'Hello ' + authResult.displayName,
+                authenticated: true,
+            });
+
+            return true;
+        }
+    } catch (e) {
+        console.log(e.name + e.message);
+        console.log(e);
+
+        Alert.alert(
+            'Oops!',
+            'Error connecting to the P2P service provider. Please try again later.',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ],
+            { cancelable: false },
+        );
+
+        that.setState({
+            authenticated: false,
+            isReady: true
+        });
+
+        return false;
     }
-
-    const value = await AsyncStorage.getItem('@access_token');
-    const refreshToken = await AsyncStorage.getItem('@refresh_token');
-    const username = await AsyncStorage.getItem('@id');
-
-    if (value) {
-      // user already logged in
-      let authResultToken = await client.loginWithToken(`${username}@hookie.janu101.voximplant.com`, value );
-      console.log('Token Set');
-
-      that.setState({
-        authenticated: true,
-        isReady: true,
-        textHeading: 'Ready ' + authResultToken.displayName + '?'
-      });
-
-    }else {
-      
-      that.clearAsyncStorage();
-      let authResult = await client.login(`${that.state.email}@hookie.janu101.voximplant.com`, `${that.state.password}`);
-      
-      console.log(authResult);
-
-      const accessToken = ["@access_token", authResult.tokens.accessToken]
-      const accessExpire = ["@access_expire", authResult.tokens.accessExpire]
-      const refreshExpire = ["@refresh_expire", authResult.tokens.refreshExpire]
-      const refreshToken = ["@refresh_token", authResult.tokens.refreshToken]
-      const userName = ["@id", that.state.email]
-      await AsyncStorage.multiSet([accessToken, accessExpire, refreshExpire, refreshToken, userName])
-
-      that.setState({
-        tokens: true,
-        textHeading: 'Hello ' + authResult.displayName,
-        authenticated: true,
-        isReady: true
-      });
-    }
-  } catch (e) {
-    console.log(e.name + e.message);
-    console.log(e);
-
-    that.setState({
-      authenticated: false,
-      isReady: true
-    });
-  }
 }
 
 //CREATE USER METHOD
@@ -88,6 +107,22 @@ const addUser = async function (user, that){
     return submitUserForm;
 
 
+}
+
+//AUTHENTICATED USER ROUTE FIND-MATCH
+const getUser = async function (that){
+
+    console.log(that);
+
+    const settings = {
+        headers: {'Authorization': `Bearer ${that.state.accessToken}`},
+        method: 'get',
+        url: 'http://localhost:3000/api/find-match',
+    }
+
+    const submitGetUser = await axios(settings);
+
+    return submitGetUser;
 }
 
 //VALIDATE USER
@@ -160,29 +195,27 @@ const validateLoginForm = async function (user){
 }
 
 //LOGIN USER METHOD
-const loginUser = async function (vox, email, password, that){
+const loginUser = async function (email, password, that){
 
     var form = await validateLoginForm(that.state);
 
     if(!form.success){
-
         Alert.alert(
             'Cannot leave blank',
             'Must enter a valid email/password',
             [
-            {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-            },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
             ],
             { cancelable: false },
         );
         return form;
     }
     
-
     const settings = {
         method: 'post',
         url: 'http://localhost:3000/login',
@@ -200,10 +233,10 @@ const loginUser = async function (vox, email, password, that){
         })
 
         await that.setStorageData('app_access_token', submitLoginForm.data.accessToken);
-        
-        return submitLoginForm.data;
+
         // var getToken = await that.getStorageData('app_access_token');
         // console.log(getToken);
+        return submitLoginForm.data;
     }
 
     if(submitLoginForm.data.success == false){
@@ -216,12 +249,12 @@ const loginUser = async function (vox, email, password, that){
             'Sorry incorrect credentials',
             'Either the user or password did not match with our records, try again.',
             [
-            {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-            },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
             ],
             { cancelable: false },
         );
@@ -232,6 +265,7 @@ const loginUser = async function (vox, email, password, that){
 
 
 module.exports.loginVox = loginVox;
+module.exports.getUser = getUser;
 module.exports.loginUser = loginUser;
 module.exports.addUser = addUser;
 module.exports.validateUser = validateUser;

@@ -176,7 +176,9 @@ class ChatScreen extends React.Component {
         */
 
         // create and start a call
-        let call = await client.call("testuser1", callSettings);
+        let call = await client.call("5d8acaf0ba1bbe430ad6436f", callSettings);
+        // let call = await client.call("testuser1", callSettings);
+
         // setting the current call to callEvent variable
         this.callEvent = call;
         // all event handlers for a call object
@@ -220,7 +222,7 @@ class ChatScreen extends React.Component {
     }
 
     _incomingCall(event) {
-        // console.log('======incoming call=======', event);
+        console.log('======incoming call=======', event);
         
         const callSettings = {
             video: {
@@ -233,13 +235,13 @@ class ChatScreen extends React.Component {
 
 
     _onCallEndpointAdded(event) {
-        // console.log('_onCallEndpointAdded', event);
+        console.log('_onCallEndpointAdded', event);
 
         this._setupEndpointListeners(event.endpoint, true);
     }
 
     _onEndpointInfoUpdated = (event) => {
-        // console.log('_onEndpointInfoUpdated', event);
+        console.log('_onEndpointInfoUpdated', event);
         event.endpoint.on(Voximplant.EndpointEvents.RemoteVideoStreamAdded, this._onEndpointRemoteVideoStreamAdded);
     };
 
@@ -249,7 +251,7 @@ class ChatScreen extends React.Component {
 
 
     _onEndpointRemoteVideoStreamAdded = (event) => {
-        // console.log(event);
+        console.log(event);
         this.setState({ 
             remoteVideoStreamId: event.videoStream.id,
             isVideoSent: true
@@ -257,7 +259,7 @@ class ChatScreen extends React.Component {
     };
 
     _onEndpointRemoteVideoStreamRemoved = (event) => {
-        // console.log(event);
+        console.log(event);
     };
 
     _failedCall(event) {
@@ -265,7 +267,7 @@ class ChatScreen extends React.Component {
     }
  
     _onLocalVideoAdded(event) {
-        // console.log('_onLocalVideoAdded', event);
+        console.log('_onLocalVideoAdded', event);
         this.setState({
             localVideoStreamId: event.videoStream.id,
         })
