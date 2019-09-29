@@ -76,6 +76,17 @@ const styles = StyleSheet.create({
     },
     formItem: {
         // backgroundColor: 'white',
+    },
+    spinner: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: '#E2E2E2',
+        textAlign: 'center',
+    },
+    thumbnail: {
+        // justifyContent: 'center',
+        alignSelf: 'center'
     }
 });
 

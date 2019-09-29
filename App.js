@@ -27,12 +27,13 @@ class App extends Component {
         lon: null
       },
       locationNow: '',
-      id: null,
-      password: null,
+      email: '',
+      password: '',
       authenticated: false,
       textHeading: 'Login',
       isReady: false,
-      tokens: false
+      tokens: false,
+      errors: {}
     }
     this.getLocation = this.getLocation.bind(this);
     this.onLogout = this.onLogout.bind(this);
@@ -52,24 +53,78 @@ class App extends Component {
     })
     
     this.getLocation()
-    this.login(); //auto tries to login the user and bring them to homepage
+    // this.login(); //auto tries to login the user and bring them to homepage
     // need to add a new click handler for login if empty than return error and prevent subission
     // otherwise login
 
   }
 
-  login(){
-    let clientConfig = {};
+  componentWillUnmount(){
+    console.log('component unmounted main APP');
+  }
+
+  async login(){
+    let client = '';
+    // let clientConfig = {};
     let that = this;
-    let client = Voximplant.getInstance(clientConfig);
-    clientConfig.enableVideo = true;
+    // let client = Voximplant.getInstance(clientConfig);
+    // clientConfig.enableVideo = true;
 
     this.setState({
       isReady: false
     })
 
+    try{
+
+      var loginResults = await loginManager.loginUser(client, that.state.email, that.state.password, that);
+
+      this.setState({
+        errors: loginResults,
+        isReady: true
+      })
+
+      if(loginResults.success == true){
+        console.log('Succesful login results!', loginResults);
+        this.setState({
+          authenticated: true
+        })
+      }
+      else {
+
+        this.setState({
+          errors: loginResults,
+          isReady: true
+        })
+
+        console.log('Failed login results!', loginResults);
+      }
+    }
+    catch(err){
+
+        this.setState({
+          isReady: true
+        })
+
+        Alert.alert(
+          'Sorry something is wrong',
+          'Please check your connection and try again.',
+          [
+          {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+          },
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ],
+          { cancelable: false },
+      );
+
+      console.log(err);
+
+    }
     //change below into a class with login and logout methods
-    loginManager.loginVox(client, that);
+    // loginManager.loginVox(client, that);
+
   }
 
   //CURRENTLY THE LOG OUT FUNCTION
@@ -83,8 +138,8 @@ class App extends Component {
       this.setState({
         authenticated: false,
         tokens: false,
-        id: null,
-        password: null
+        email: '',
+        password: ''
       })
 
       Alert.alert(
@@ -151,7 +206,7 @@ class App extends Component {
 
   changeUsername(e){
     this.setState({
-        id: e
+        email: e
       }
     )
   }
@@ -207,10 +262,10 @@ class App extends Component {
     var loginForm = (
       <View style={styles.containerBody}>
         <Text style={styles.introText}>Hello there, please sign-in or register now!</Text>
-        <Item regular>
-          <Input autoCapitalize='none' placeholder='Username' onChangeText={ this.changeUsername }/>
+        <Item error={this.state.errors.email ? true : false} regular>
+          <Input autoCapitalize='none' placeholder={this.state.email ? this.state.email : 'mail@example.com'} onChangeText={ this.changeUsername }/>
         </Item>
-        <Item regular>
+        <Item error={this.state.errors.password ? true : false} regular>
           <Input secureTextEntry={true} placeholder='Password' onChangeText={ this.changePassword }/>
         </Item>
         <Button style={styles.buttonSubmit} block dark onPress={ this.login }>

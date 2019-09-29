@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Animated, Alert, Platform, StyleSheet, View, DeviceEventEmitter } from 'react-native';
-import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text, Spinner, Footer, FooterTab, Item, Input, Toast } from 'native-base';
+import { Container, Content, Header, Left, Body, Right, Title, Button, Icon, Text, Spinner, Footer, FooterTab, Item, Input, Toast, Thumbnail } from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import loginManager from '../../util/loginManager';
 import styles from './styles.js';
@@ -9,6 +9,7 @@ class RegisterScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isReady: false,
             avatar: 'https://i.ibb.co/7J4pNLr/profilephoto.png',
             name: '',
             lastName: '',
@@ -29,7 +30,12 @@ class RegisterScreen extends React.Component {
     }
 
     componentDidMount() {
-        console.log('register screen')
+        console.log('register screen');
+
+        this.setState({
+            isReady: true
+        })
+
     }
 
     goBack(){
@@ -37,6 +43,10 @@ class RegisterScreen extends React.Component {
     }
 
     async submitRegistrationForm(){
+
+        this.setState({
+            isReady: false
+        })
 
         var form = await loginManager.validateUser(this.state);
 
@@ -48,18 +58,24 @@ class RegisterScreen extends React.Component {
         * FORM FAILED
         */
         if(form.success == false){
+
+            this.setState({
+                isReady: true
+            })
+
+
             //alert message for user if errors with form
             Alert.alert(
-                    'Please check credentials!',
-                    'Review the registration form.',
-                    [
-                    {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                    },
-                    { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    ],
+                'Please check credentials!',
+                'Review the registration form.',
+                [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+                ],
                 { cancelable: false },
             );
             return;
@@ -67,12 +83,16 @@ class RegisterScreen extends React.Component {
 
         const formResult = await loginManager.addUser(this.state, this);
 
-
         /*
-        * USER EMAIL IS NOT UNIQUE
+        * USER SUCCESSFULLY SIGNED UP
         */
-
         if(formResult.data.success == true){
+
+            this.setState({
+                isReady: true
+            })
+
+
             Alert.alert(
                 'Successfully Signed up!.',
                 'Proceed to login form now.',
@@ -93,6 +113,12 @@ class RegisterScreen extends React.Component {
         */
 
         if(formResult.data.message.code == 11000){
+
+            this.setState({
+                isReady: true
+            })
+
+
             Alert.alert(
                 'Sorry that email is taken.',
                 'Try a differnt email address.',
@@ -119,6 +145,11 @@ class RegisterScreen extends React.Component {
 
     render() {
 
+
+        if (this.state.isReady !== true) {
+            return (<Spinner style={styles.spinner} color='#000000' />);
+        }
+
         return (
             <Container style={{ backgroundColor: 'white' }}>
                 <Header noLeft>
@@ -139,7 +170,8 @@ class RegisterScreen extends React.Component {
         
                     </Right>
                 </Header>
-                <LinearGradient colors={['#FFFFFF', '#FFFFFF', '#E6E6E6']} style={styles.linearGradient}>
+                {/* <LinearGradient colors={['#FFFFFF', '#FFFFFF', '#E6E6E6']} style={styles.linearGradient}> */}
+                    <Thumbnail style={styles.thumbnail} square large source={{uri: 'https://i.ibb.co/7J4pNLr/profilephoto.png'}} />
                     {/* <Content> */}
                         <View style={styles.view}>
                             <View style={styles.container}>
@@ -147,7 +179,7 @@ class RegisterScreen extends React.Component {
                                     <Input
                                         style={styles.formItem}
                                         autoCapitalize='none'
-                                        placeholder='First name'
+                                        placeholder={this.state.name ? this.state.name : 'First name'}
                                         onChangeText={(value) => this.changeField('name', value)} 
                                     />
                                 </Item>
@@ -155,7 +187,7 @@ class RegisterScreen extends React.Component {
                                     <Input
                                         style={styles.formItem}
                                         autoCapitalize='none'
-                                        placeholder='Last name'
+                                        placeholder={this.state.lastName ? this.state.lastName : 'Last name'}
                                         onChangeText={(value) => this.changeField('lastName', value)} 
                                     />
                                 </Item>
@@ -163,7 +195,7 @@ class RegisterScreen extends React.Component {
                                     <Input
                                         style={styles.formItem}
                                         autoCapitalize='none'
-                                        placeholder='Email address'
+                                        placeholder={this.state.email ? this.state.email : 'Email address'}
                                         onChangeText={(value) => this.changeField('email', value)} 
                                     />
                                 </Item>
@@ -178,7 +210,7 @@ class RegisterScreen extends React.Component {
                                 <Item error={this.state.errors.mobileNumber ? true : false} style={styles.formWrapper}>
                                     <Input
                                         style={styles.formItem}
-                                        placeholder='01-514-239-3439'
+                                        placeholder={this.state.mobileNumber ? this.state.mobileNumber : 'Phone number including country code'} 
                                         onChangeText={(value) => this.changeField('mobileNumber', value)} 
                                     />
                                 </Item>
@@ -196,7 +228,7 @@ class RegisterScreen extends React.Component {
                             </FooterTab>
                     </Footer> */}
                     {/* </Content> */}
-                </LinearGradient>
+                {/* </LinearGradient> */}
             </Container>
         );
     }

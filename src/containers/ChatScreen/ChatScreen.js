@@ -108,6 +108,17 @@ class ChatScreen extends React.Component {
         this.makeCall();
     }
 
+    shouldComponentUpdate(nextProps, nextState){
+
+        console.log('NEXT PROPS', nextProps);
+        console.log('NEXT STATE', nextState);
+        if(this.state.localVideoStreamId !== nextState){
+            return true
+        }
+
+        return false;
+    }
+
     componentWillUnmount() {
 
         console.log('component unmounted');

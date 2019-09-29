@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { Voximplant, VIClient } from "react-native-voximplant";
+import { Voximplant } from "react-native-voximplant";
 import AsyncStorage from '@react-native-community/async-storage';
 import isEmpty from 'validator/lib/isEmpty';
 import isEmail from 'validator/lib/isEmail';
@@ -41,7 +41,7 @@ const loginVox = async function (client, that){
     }else {
       
       that.clearAsyncStorage();
-      let authResult = await client.login(`${that.state.id}@hookie.janu101.voximplant.com`, `${that.state.password}`);
+      let authResult = await client.login(`${that.state.email}@hookie.janu101.voximplant.com`, `${that.state.password}`);
       
       console.log(authResult);
 
@@ -49,7 +49,7 @@ const loginVox = async function (client, that){
       const accessExpire = ["@access_expire", authResult.tokens.accessExpire]
       const refreshExpire = ["@refresh_expire", authResult.tokens.refreshExpire]
       const refreshToken = ["@refresh_token", authResult.tokens.refreshToken]
-      const userName = ["@id", that.state.id]
+      const userName = ["@id", that.state.email]
       await AsyncStorage.multiSet([accessToken, accessExpire, refreshExpire, refreshToken, userName])
 
       that.setState({
@@ -102,8 +102,6 @@ const validateUser = async function (user){
         mobileNumber: false
     };
 
-    errors
-
     //Email Validation
     if (isEmpty(user.email) || !isEmail(user.email)) {
         console.log('incorrect email')
@@ -132,15 +130,108 @@ const validateUser = async function (user){
         errors.success = false;
     }
 
-    //Mobile phone number 
-    // if (isEmpty(user.mobileNumber) || !isMobilePhone('+' + user.mobileNumber, 'any', {strictMode: true})) {
-    //     errors.mobileNumber = true
-    //     errors.success = false;
-    // }
+    return errors;
+}
+
+//VALIDATE USER
+const validateLoginForm = async function (user){
+
+    var errors = {
+        success: true,
+        email: false,
+        password: false
+    };
+
+    //Email Validation
+    if (isEmpty(user.email) || !isEmail(user.email)) {
+        console.log('incorrect email')
+        errors.email = true
+        errors.success = false;
+    }
+
+    //Password Validation
+    if (isEmpty(user.password) || !isLength(user.password, { min: 6, max: 20 })) {
+        console.log('incorrect password must be between 6 and 20 characters')
+        errors.password = true
+        errors.success = false;
+    }
 
     return errors;
 }
 
+//LOGIN USER METHOD
+const loginUser = async function (vox, email, password, that){
+
+    var form = await validateLoginForm(that.state);
+
+    if(!form.success){
+
+        Alert.alert(
+            'Cannot leave blank',
+            'Must enter a valid email/password',
+            [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ],
+            { cancelable: false },
+        );
+        return form;
+    }
+    
+
+    const settings = {
+        method: 'post',
+        url: 'http://localhost:3000/login',
+        data: {
+            email: email,
+            password: password
+        }
+    }
+
+    const submitLoginForm = await axios(settings);
+
+    if(submitLoginForm.data.success){
+        that.setState({
+          isReady: true
+        })
+
+        await that.setStorageData('app_access_token', submitLoginForm.data.accessToken);
+        
+        return submitLoginForm.data;
+        // var getToken = await that.getStorageData('app_access_token');
+        // console.log(getToken);
+    }
+
+    if(submitLoginForm.data.success == false){
+
+        that.setState({
+          isReady: true
+        })
+        
+        Alert.alert(
+            'Sorry incorrect credentials',
+            'Either the user or password did not match with our records, try again.',
+            [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ],
+            { cancelable: false },
+        );
+        
+        return submitLoginForm.data;
+    }
+}
+
+
 module.exports.loginVox = loginVox;
+module.exports.loginUser = loginUser;
 module.exports.addUser = addUser;
 module.exports.validateUser = validateUser;
