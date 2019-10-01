@@ -49,14 +49,41 @@ class App extends Component {
 
   async componentDidMount(){
 
-    this.setState({
-      isReady: true
-    })
+    // this.setState({
+    //   isReady: true
+    // })
     
     this.getLocation()
     // this.login(); //auto tries to login the user and bring them to homepage
     // need to add a new click handler for login if empty than return error and prevent subission
     // otherwise login
+
+    const userLoggedIn = await this.getStorageData('@id');
+    console.log(userLoggedIn);
+    if(userLoggedIn){
+
+      let that = this;
+      let clientConfig = {};
+      let client = Voximplant.getInstance(clientConfig);
+      clientConfig.enableVideo = true;
+
+      const tryLoggingIn = await loginManager.loginVoxBasic(client, that);
+      if(tryLoggingIn){
+
+        this.setState({
+          authenticated: true,
+          isReady: true
+        })
+
+        return;
+      }
+    
+
+      this.setState({
+        isReady: true
+      })
+
+    }
 
   }
 

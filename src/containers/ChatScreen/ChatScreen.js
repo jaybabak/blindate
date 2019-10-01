@@ -176,7 +176,7 @@ class ChatScreen extends React.Component {
         */
 
         // create and start a call
-        let call = await client.call("5d8acaf0ba1bbe430ad6436f", callSettings);
+        let call = await client.call("5d915fbd0cdd879740ee097f", callSettings);
         // let call = await client.call("testuser1", callSettings);
 
         // setting the current call to callEvent variable

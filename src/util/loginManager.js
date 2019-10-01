@@ -27,9 +27,9 @@ const loginVox = async function (client, that){
         const refreshToken = await AsyncStorage.getItem('@refresh_token');
         const username = await AsyncStorage.getItem('@id');
 
-        if (value) {
+        if (username) {
             // user already logged in
-            let authResultToken = await client.loginWithToken(`${username}@hookie.janu101.voximplant.com`, value );
+            let authResultToken = await client.login(`${username}@hookie.janu101.voximplant.com`, username );
             console.log('Token Set');
 
             that.setState({
@@ -62,6 +62,66 @@ const loginVox = async function (client, that){
 
             return true;
         }
+    } catch (e) {
+        console.log(e.name + e.message);
+        console.log(e);
+
+        Alert.alert(
+            'Oops!',
+            'Error connecting to the P2P service provider. Please try again later.',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ],
+            { cancelable: false },
+        );
+
+        that.setState({
+            authenticated: false,
+            isReady: true
+        });
+
+        return false;
+    }
+}
+
+const loginVoxBasic = async function (client, that){
+
+    console.log('Login Vox Basic Authentication');
+
+    try {
+        await client.disconnect();
+        let state = await client.getClientState();
+
+        if (state === Voximplant.ClientState.DISCONNECTED) {
+            await client.connect();
+        }
+
+        const username = await AsyncStorage.getItem('@id');
+        let authResult = await client.login(`${username}@hookie.janu101.voximplant.com`, `${username}`);
+        
+        console.log(authResult);
+
+        const accessToken = ["@access_token", authResult.tokens.accessToken]
+        const accessExpire = ["@access_expire", authResult.tokens.accessExpire]
+        const refreshExpire = ["@refresh_expire", authResult.tokens.refreshExpire]
+        const refreshToken = ["@refresh_token", authResult.tokens.refreshToken]
+        // const userName = ["@id", that.state.user._id]
+        await AsyncStorage.multiSet([accessToken, accessExpire, refreshExpire, refreshToken])
+
+        that.setState({
+            tokens: true,
+            textHeading: 'Hello ' + authResult.displayName,
+            authenticated: true,
+            isReady: true
+        });
+
+        return true;
+     
     } catch (e) {
         console.log(e.name + e.message);
         console.log(e);
@@ -265,6 +325,7 @@ const loginUser = async function (email, password, that){
 
 
 module.exports.loginVox = loginVox;
+module.exports.loginVoxBasic = loginVoxBasic;
 module.exports.getUser = getUser;
 module.exports.loginUser = loginUser;
 module.exports.addUser = addUser;
