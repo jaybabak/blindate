@@ -48,10 +48,6 @@ class App extends Component {
   }
 
   async componentDidMount(){
-
-    // this.setState({
-    //   isReady: true
-    // })
     
     this.getLocation()
     // this.login(); //auto tries to login the user and bring them to homepage
@@ -83,8 +79,12 @@ class App extends Component {
         isReady: true
       })
 
+      return;
     }
 
+    this.setState({
+      isReady: true
+    })
   }
 
   componentWillUnmount(){
@@ -107,7 +107,7 @@ class App extends Component {
       var loginResults = await loginManager.loginUser(that.state.email, that.state.password, that);
 
       if(loginResults.success == true){
-        console.log('Succesful login results!', loginResults);
+        // console.log('Succesful login results!', loginResults);
         this.setState({
           authenticated: true,
           accessToken: loginResults.accessToken,
@@ -170,7 +170,8 @@ class App extends Component {
         authenticated: false,
         tokens: false,
         email: '',
-        password: ''
+        password: '',
+        textHeading: '...'
       })
 
       Alert.alert(
@@ -294,10 +295,10 @@ class App extends Component {
       <View style={styles.containerBody}>
         <Text style={styles.introText}>Hello there, please sign-in or register now!</Text>
         <Item error={this.state.errors.email ? true : false} regular>
-          <Input autoCapitalize='none' placeholder={this.state.email ? this.state.email : 'mail@example.com'} onChangeText={ this.changeUsername }/>
+          <Input autoCapitalize='none' value={this.state.email} placeholder='user@example.com' onChangeText={ this.changeUsername }/>
         </Item>
         <Item error={this.state.errors.password ? true : false} regular>
-          <Input secureTextEntry={true} placeholder='Password' onChangeText={ this.changePassword }/>
+          <Input secureTextEntry={true} placeholder='Your password' onChangeText={ this.changePassword }/>
         </Item>
         <Button style={styles.buttonSubmit} block dark onPress={ this.login }>
           <Text style={styles.whiteText}>Login</Text>
