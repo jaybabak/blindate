@@ -49,10 +49,46 @@ class App extends Component {
 
   async componentDidMount(){
 
-    this.setState({
-      isReady: true
-    })
+    let clientConfig = {};
+    let client = Voximplant.getInstance(clientConfig);
     
+    clientConfig.enableVideo = true;
+
+    
+
+    // // const value = await AsyncStorage.getItem('app_access_token');
+    // const value = await AsyncStorage.getItem('@app_access_token');
+    // console.log('APP ACCESS TOKEN', value);
+
+    // if(value){
+    //   const getUserData = await loginManager.getUser();
+    //   console.log(getUserData);
+
+    //   await this.setStorageData('@id', getUserData.data.user._id);
+
+    //   //try to login to vox
+    //   var voxLogin = await loginManager.loginVox(client, this);
+    //   console.log(voxLogin);
+      
+    //   // if(voxLogin){
+    //   //   this.setState({
+    //   //     isReady: true,
+    //   //     authenticated: true
+    //   //   })
+    //   // }else {
+    //   //   this.setState({
+    //   //     isReady: true,
+    //   //     authenticated: false
+    //   //   });
+    //   // }
+    // }else {
+      this.setState({
+        isReady: true
+      })
+
+    // }
+    
+
     this.getLocation()
     // this.login(); //auto tries to login the user and bring them to homepage
     // need to add a new click handler for login if empty than return error and prevent subission
@@ -69,6 +105,7 @@ class App extends Component {
     let that = this;
     let clientConfig = {};
     let client = Voximplant.getInstance(clientConfig);
+    
     clientConfig.enableVideo = true;
 
     this.setState({
@@ -93,7 +130,7 @@ class App extends Component {
 
         //try to login to vox
         var voxLogin = await loginManager.loginVox(client, that);
-
+        console.log(voxLogin);
         if(voxLogin){
           this.setState({
             isReady: true

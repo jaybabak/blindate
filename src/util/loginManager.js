@@ -13,8 +13,6 @@ const axios = require('axios');
 //LOGIN TO VOX API/SDK
 const loginVox = async function (client, that){
 
-    console.log('Yayyyy login vox class');
-
     try {
         await client.disconnect();
         let state = await client.getClientState();
@@ -24,18 +22,20 @@ const loginVox = async function (client, that){
         }
 
         const value = await AsyncStorage.getItem('@access_token');
-        const refreshToken = await AsyncStorage.getItem('@refresh_token');
+        // const refreshToken = await AsyncStorage.getItem('@refresh_token');
         const username = await AsyncStorage.getItem('@id');
+        console.log(username);
 
         if (value) {
             // user already logged in
             let authResultToken = await client.loginWithToken(`${username}@hookie.janu101.voximplant.com`, value );
-            console.log('Token Set');
+            // let authResultToken = await client.login(`${username}@hookie.janu101.voximplant.com`, `${username}`);
+            console.log('Normal Sign-in', authResultToken);
 
             that.setState({
                 authenticated: true,
                 isReady: true,
-                textHeading: 'Ready ' + authResultToken.displayName + '?'
+                textHeading: 'Hello, ' + authResultToken.displayName
             });
 
             return true;
@@ -45,7 +45,7 @@ const loginVox = async function (client, that){
             that.clearAsyncStorage();
             let authResult = await client.login(`${that.state.user._id}@hookie.janu101.voximplant.com`, `${that.state.user._id}`);
             
-            console.log(authResult);
+            console.log('Id/pass login', authResult);
 
             const accessToken = ["@access_token", authResult.tokens.accessToken]
             const accessExpire = ["@access_expire", authResult.tokens.accessExpire]
@@ -56,7 +56,7 @@ const loginVox = async function (client, that){
 
             that.setState({
                 tokens: true,
-                textHeading: 'Hello ' + authResult.displayName,
+                textHeading: 'Hello, ' + authResult.displayName,
                 authenticated: true,
             });
 
@@ -110,12 +110,12 @@ const addUser = async function (user, that){
 }
 
 //AUTHENTICATED USER ROUTE FIND-MATCH
-const getUser = async function (that){
+const getUser = async function (){
 
-    console.log(that);
+    const value = await AsyncStorage.getItem('app_access_token');
 
     const settings = {
-        headers: {'Authorization': `Bearer ${that.state.accessToken}`},
+        headers: {'Authorization': `Bearer ${value}`},
         method: 'get',
         url: 'http://localhost:3000/api/find-match',
     }
@@ -228,11 +228,24 @@ const loginUser = async function (email, password, that){
     const submitLoginForm = await axios(settings);
 
     if(submitLoginForm.data.success){
+
+        console.log('LOGIN FORM SUCCESS ---)');
+
         that.setState({
           isReady: true
         })
 
-        await that.setStorageData('app_access_token', submitLoginForm.data.accessToken);
+        await AsyncStorage.setItem('@app_access_token', submitLoginForm.data.accessToken);
+
+        // await that.setStorageData('app_access_token', );
+        var z = await that.getStorageData('@app_access_token');
+
+        console.log(z);
+        /* @TODO
+        *   - Need to set the _id from user to @id asynstorage so that voxLogin 
+        *   can use that if user is already authenticated to login
+        *   - Update the getUser or loginUser (this one) to resolve
+        */
 
         // var getToken = await that.getStorageData('app_access_token');
         // console.log(getToken);
