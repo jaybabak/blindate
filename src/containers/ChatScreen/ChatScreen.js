@@ -21,9 +21,6 @@ import io from 'socket.io-client';
 
 
 let clientConfig = {};
-
-clientConfig.saveLogsToFile = true; //ios only
-clientConfig.enableVideo = true; // Android only option
 clientConfig.sendVideo = true; // Android only option
 
 let client = Voximplant.getInstance(clientConfig);
@@ -263,6 +260,7 @@ class ChatScreen extends React.Component {
     };
 
     _failedCall(event) {
+        this.componentWillUnmount()
         console.log('_failedCall', event);
     }
  

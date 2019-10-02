@@ -179,6 +179,7 @@ class RegisterScreen extends React.Component {
                                     <Input
                                         style={styles.formItem}
                                         autoCapitalize='none'
+                                        value={this.state.name}
                                         placeholder={this.state.name ? this.state.name : 'First name'}
                                         onChangeText={(value) => this.changeField('name', value)} 
                                     />
@@ -187,6 +188,7 @@ class RegisterScreen extends React.Component {
                                     <Input
                                         style={styles.formItem}
                                         autoCapitalize='none'
+                                        value={this.state.lastName}
                                         placeholder={this.state.lastName ? this.state.lastName : 'Last name'}
                                         onChangeText={(value) => this.changeField('lastName', value)} 
                                     />
@@ -195,6 +197,7 @@ class RegisterScreen extends React.Component {
                                     <Input
                                         style={styles.formItem}
                                         autoCapitalize='none'
+                                        value={this.state.email}
                                         placeholder={this.state.email ? this.state.email : 'Email address'}
                                         onChangeText={(value) => this.changeField('email', value)} 
                                     />
@@ -210,6 +213,7 @@ class RegisterScreen extends React.Component {
                                 <Item error={this.state.errors.mobileNumber ? true : false} style={styles.formWrapper}>
                                     <Input
                                         style={styles.formItem}
+                                        value={this.state.mobileNumber}
                                         placeholder={this.state.mobileNumber ? this.state.mobileNumber : 'Phone number including country code'} 
                                         onChangeText={(value) => this.changeField('mobileNumber', value)} 
                                     />

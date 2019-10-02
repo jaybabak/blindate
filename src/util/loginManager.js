@@ -97,7 +97,7 @@ const loginVoxBasic = async function (client, that){
 
         that.setState({
             tokens: true,
-            textHeading: 'Hello ' + authResult.displayName,
+            textHeading: 'Welcome back, ' + authResult.displayName,
             authenticated: true,
             isReady: true
         });
