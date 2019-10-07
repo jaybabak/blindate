@@ -55,8 +55,9 @@ class App extends Component {
     // otherwise login
 
     const userLoggedIn = await this.getStorageData('@id');
+    const accessToken = await this.getStorageData('@app_access_token');
     console.log(userLoggedIn);
-    if(userLoggedIn){
+    if(userLoggedIn && accessToken){
 
       let that = this;
       let clientConfig = {};
@@ -64,11 +65,18 @@ class App extends Component {
       clientConfig.enableVideo = true;
 
       const tryLoggingIn = await loginManager.loginVoxBasic(client, that);
+      const getTheUser = await loginManager.getUser(accessToken);
+
+
+      console.log(tryLoggingIn);
+      console.log(getTheUser);
+      
       if(tryLoggingIn){
 
         this.setState({
           authenticated: true,
-          isReady: true
+          isReady: true,
+          textHeading: 'Welcome back, ' + getTheUser.data.user.name
         })
 
         return;
@@ -81,6 +89,8 @@ class App extends Component {
 
       return;
     }
+
+    console.log('No App or ID token found');
 
     this.setState({
       isReady: true
@@ -109,22 +119,25 @@ class App extends Component {
       if(loginResults.success == true){
         // console.log('Succesful login results!', loginResults);
         this.setState({
-          authenticated: true,
           accessToken: loginResults.accessToken,
         })
         
-        var getUserData = await loginManager.getUser(this);
+        var getUserData = await loginManager.getUser(this.state.accessToken);
+        console.log(getUserData);
         this.setState({
           user: getUserData.data.user
         })
 
         //try to login to vox
         var voxLogin = await loginManager.loginVox(client, that);
+        console.log(voxLogin);
 
         if(voxLogin){
           this.setState({
+            textHeading: 'Hello ' + getUserData.data.user.name,
+            authenticated: true,
             isReady: true
-          })
+          });
         }
       }
       else {
@@ -227,7 +240,7 @@ class App extends Component {
       }
     ) 
   }
-
+ 
   navigateToChatScreen(){
     this.props.navigation.navigate('Start Date', this.state.location); //pass params to this object to pass current vixomplant instance
   }

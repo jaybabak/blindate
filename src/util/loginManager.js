@@ -23,7 +23,7 @@ const loginVox = async function (client, that){
             await client.connect();
         }
         
-        that.clearAsyncStorage();
+        // that.clearAsyncStorage();
         let authResult = await client.login(`${that.state.user._id}@hookie.janu101.voximplant.com`, `${that.state.user._id}`);
         
         console.log(authResult);
@@ -37,11 +37,11 @@ const loginVox = async function (client, that){
 
         that.setState({
             tokens: true,
-            textHeading: 'Hello ' + authResult.displayName,
-            authenticated: true,
-            isReady: true
+            // textHeading: 'Hello ' + authResult.displayName,
+            // authenticated: true,
+            // isReady: true
         });
-
+ 
         return true;
 
     } catch (e) {
@@ -97,7 +97,7 @@ const loginVoxBasic = async function (client, that){
 
         that.setState({
             tokens: true,
-            textHeading: 'Welcome back, ' + authResult.displayName,
+            // textHeading: 'Welcome back, ' + authResult.displayName,
             authenticated: true,
             isReady: true
         });
@@ -152,12 +152,10 @@ const addUser = async function (user, that){
 }
 
 //AUTHENTICATED USER ROUTE FIND-MATCH
-const getUser = async function (that){
-
-    console.log(that);
+const getUser = async function (accessToken){
 
     const settings = {
-        headers: {'Authorization': `Bearer ${that.state.accessToken}`},
+        headers: {'Authorization': `Bearer ${accessToken}`},
         method: 'get',
         url: 'http://localhost:3000/api/find-match',
     }
@@ -268,24 +266,23 @@ const loginUser = async function (email, password, that){
     }
 
     const submitLoginForm = await axios(settings);
-
+    
     if(submitLoginForm.data.success){
-        that.setState({
-          isReady: true
-        })
 
-        await that.setStorageData('app_access_token', submitLoginForm.data.accessToken);
+        console.log(submitLoginForm);
+        
+        try {
+            await AsyncStorage.setItem('@app_access_token', submitLoginForm.data.accessToken);
+        }catch(err){
+            console.log(err);
+        }
 
-        // var getToken = await that.getStorageData('app_access_token');
-        // console.log(getToken);
         return submitLoginForm.data;
-    }
+    }else {
 
-    if(submitLoginForm.data.success == false){
-
-        that.setState({
-          isReady: true
-        })
+        // that.setState({
+        //   isReady: true
+        // })
         
         Alert.alert(
             'Sorry incorrect credentials',

@@ -75,6 +75,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         // backgroundColor: '#E2E2E2',
         textAlign: 'center',
+    },
+    thumbnail: {
+        // justifyContent: 'center',
+        alignSelf: 'center'
     }
 });
 
